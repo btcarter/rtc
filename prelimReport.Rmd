@@ -1,0 +1,55 @@
+---
+title: "OAT"
+author: "Benjamin Carter"
+date: "6/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
+data.dir.path <- file.path(
+  "V:",
+  "Depts", 
+  "CtrTransRsch", 
+  "Dept Private", 
+  "CTR Staff", 
+  "PROJECT - Readiness to change manuscript", 
+  "DATA"
+  )
+```
+
+```{r loadData, include=FALSE}
+df <- readxl::read_xlsx(
+  file.path(data.dir.path, "Nick_Rural16_OAT.xlsx")
+  )
+
+df2 <- readxl::read_xlsx(
+  file.path(data.dir.path, "OAT_16S_0820_2018.xlsx")
+  )
+```
+
+# Descriptives
+
+```{r}
+tab1 <- compareGroups::compareGroups(
+  Gender ~ . - ID - Group - StudyID,
+  data = df
+  )
+
+compareGroups::createTable(
+  tab1,
+  show.p.overall = FALSE
+  )
+
+```
+
+# Regression
+
+```{r}
+
+```
+
+
+
