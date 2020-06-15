@@ -30,6 +30,16 @@ df2 <- readxl::read_xlsx(
   )
 ```
 
+
+```{r selection}
+df %>% 
+  filter(
+    Core > 2
+  ) %>% 
+  nrow()
+```
+
+
 # Descriptives
 
 ```{r}
