@@ -22,7 +22,7 @@ data.dir.path <- file.path(
 
 ```{r loadData, include=FALSE}
 df <- readxl::read_xlsx(
-  file.path(data.dir.path, "Nick_Rural16_OAT.xlsx")
+  file.path(data.dir.path, "Nick_Rural16_OAT 6-11-20.xlsx")
   )
 
 df2 <- readxl::read_xlsx(
@@ -48,7 +48,7 @@ compareGroups::createTable(
 # Regression
 
 ```{r}
-
+model <- glm(formula = Met7GoalOVL ~ Gender + Age + `1a_pre` * `2a_pre`, data = df, family = binomial)
 ```
 
 
