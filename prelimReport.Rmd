@@ -38,7 +38,11 @@ df.processed <- df %>%
       Gender == 1,
       "Female",
       "Male"
-      )
+      ),
+    rtc_diet = ifelse(
+      
+    ),
+    rtc_exercise
   ) %>% 
   filter(
     !is.na(`1a_pre`)
@@ -50,6 +54,25 @@ df.processed <- df %>%
     MaxWeightLost,
     pWeightLost
   )
+
+
+# Dependent variables (outcomes):
+# •	> 7% weight loss over all the program
+# •	> 7% weight loss during core
+# •	> 5% weight loss over all the program
+# •	> 5% weight loss during core
+# •	% weight loss over all the program
+# •	% weight loss during core
+# 
+# Dependent and independent variables
+# •	Number of core sessions attended (or completed core yes/no as dependent variable)
+# •	Number of post core sessions attended
+# •	Number of total sessions attended (or completed program yes/no as dependent variable)
+# •	Met daily fat gram goal
+# •	Reported daily fat gram intake
+# •	Met weekly activity goal
+# •	Reported weekly activity minutes
+
 
 ```
 
@@ -71,7 +94,7 @@ compareGroups::createTable(
 # Regression
 
 ```{r}
-model <- glm(formula = `1a_pre` * `2a_pre`, data = df.processed, family = binomial) %>% summary()
+model <- glm(formula = rtc_diet*rtc_exercise + Age + Gender + BMI, data = df.processed, family = binomial) %>% summary()
 ```
 
 
