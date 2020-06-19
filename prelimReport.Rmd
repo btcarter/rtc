@@ -32,11 +32,25 @@ df2 <- readxl::read_xlsx(
 
 
 ```{r selection}
-df %>% 
-  filter(
-    Core > 2
+df.processed <- df %>% 
+  mutate(
+    Gender = ifelse(
+      Gender == 1,
+      "Female",
+      "Male"
+      )
   ) %>% 
-  nrow()
+  filter(
+    !is.na(`1a_pre`)
+  ) %>% 
+  select(
+    Gender,
+    Age,
+    Weight = Todays_Weight,
+    MaxWeightLost,
+    pWeightLost
+  )
+
 ```
 
 
@@ -44,13 +58,12 @@ df %>%
 
 ```{r}
 tab1 <- compareGroups::compareGroups(
-  Gender ~ . - ID - Group - StudyID,
-  data = df
+   ~ . - Site - Time - ID - Group - StudyID,
+  data = df.processed
   )
 
 compareGroups::createTable(
-  tab1,
-  show.p.overall = FALSE
+  tab1
   )
 
 ```
@@ -58,7 +71,7 @@ compareGroups::createTable(
 # Regression
 
 ```{r}
-model <- glm(formula = Met7GoalOVL ~ Gender + Age + `1a_pre` * `2a_pre`, data = df, family = binomial)
+model <- glm(formula = `1a_pre` * `2a_pre`, data = df.processed, family = binomial) %>% summary()
 ```
 
 
