@@ -100,29 +100,30 @@ df.processed <- df %>%
             )
           )
         )
-      ),
-      rtc_exercise_groups = ifelse(
-      `2a_pre` == 1,
+      )
+    ),
+    rtc_exercise_groups = ifelse(
+    `2a_pre` == 1,
+    "Pre/Contemplative",
+    ifelse(
+      `2a_pre` == 2,
       "Pre/Contemplative",
       ifelse(
-        `2a_pre` == 2,
-        "Pre/Contemplative",
+        `2a_pre` == 3,
+        "Preparation",
         ifelse(
-          `2a_pre` == 3,
-          "Preparation",
+          `2a_pre` == 4,
+          "Action",
           ifelse(
-            `2a_pre` == 4,
-            "Action",
-            ifelse(
-              `2a_pre` == 5,
-              "Maintain",
-              `2a_pre`
-            )
+            `2a_pre` == 5,
+            "Maintain",
+            `2a_pre`
           )
         )
       )
     )
-  ) %>% 
+  )
+) %>% 
   filter(
     !is.na(`1a_pre`),
     !is.na(`2a_pre`)
