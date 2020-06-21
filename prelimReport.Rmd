@@ -129,30 +129,28 @@ df.processed <- df %>%
     !is.na(`2a_pre`)
   ) %>% 
   select(
+    rtc_diet,
+    rtc_diet_groups,
+    rtc_exercise,
+    rtc_exercise_groups,
     Gender,
     Age,
-    Weight = Todays_Weight,
+    Start_Weight = Todays_Weight,
+    BMI,
     MaxWeightLost,
-    pWeightLost
+    pWeightLost,
+    Met7GoalCore,
+    Met7GoalOVL,
+    Met5GoalCore,
+    Met5GoalOVL,
+    Core,
+    AfterCore,
+    `Number of Sessions`,
+    FatGramGoalMet,
+    Met_Fat_Gram,
+    Exercise_Goal_50_Met,
+    Met_Activity_Goal
   )
-
-
-# Dependent variables (outcomes):
-# •	> 7% weight loss over all the program
-# •	> 7% weight loss during core
-# •	> 5% weight loss over all the program
-# •	> 5% weight loss during core
-# •	% weight loss over all the program
-# •	% weight loss during core
-# 
-# Dependent and independent variables
-# •	Number of core sessions attended (or completed core yes/no as dependent variable)
-# •	Number of post core sessions attended
-# •	Number of total sessions attended (or completed program yes/no as dependent variable)
-# •	Met daily fat gram goal
-# •	Reported daily fat gram intake
-# •	Met weekly activity goal
-# •	Reported weekly activity minutes
 
 
 ```
