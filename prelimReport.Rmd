@@ -1,12 +1,22 @@
 ---
-title: "OAT"
+title: "Readiness to Change"
 author: "Benjamin Carter"
-date: "6/11/2020"
-output: html_document
+date: "6/20/2020"
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  slidy_presentation:
+    incremental: yes
+  ioslides_presentation:
+    incremental: yes
+    widescreen: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(dplyr)
 # paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
 data.dir.path <- file.path(
@@ -122,58 +132,136 @@ df.processed <- df %>%
         )
       )
     )
-  )
+  ),
+  Include = ifelse(
+    is.na(`1a_pre`) |
+      is.na(`2a_pre`),
+    "FALSE",
+    "TRUE"
+  ),
+  MaxWeightLost = MaxWeightLost*-1
 ) %>% 
-  filter(
-    !is.na(`1a_pre`),
-    !is.na(`2a_pre`)
-  ) %>% 
   select(
     rtc_diet,
     rtc_diet_groups,
     rtc_exercise,
     rtc_exercise_groups,
+    Include,
     Gender,
     Age,
-    Start_Weight = Todays_Weight,
+    `Start weight` = Todays_Weight,
     BMI,
-    MaxWeightLost,
-    pWeightLost,
-    Met7GoalCore,
-    Met7GoalOVL,
-    Met5GoalCore,
-    Met5GoalOVL,
-    Core,
-    AfterCore,
-    `Number of Sessions`,
-    FatGramGoalMet,
-    Met_Fat_Gram,
-    Exercise_Goal_50_Met,
-    Met_Activity_Goal
+    `Maximum weight lost` = MaxWeightLost,
+    `Percent weight lost` = pWeightLost,
+    `Lost 7 percent during core` = Met7GoalCore,
+    `Lost 7 percent overall` = Met7GoalOVL,
+    `Lost 5 percent during core` = Met5GoalCore,
+    `Lost 5 percent overall` = Met5GoalOVL,
+    `Core attendance` = Core,
+    `Post-core attendance` = AfterCore,
+    `Overall attendance` = `Number of Sessions`,
+    `Met fat goal` = FatGramGoalMet,
+    `Met fat goal (percentage of sessions)` = Met_Fat_Gram,
+    `Met exercise goal at least 50 percent` = Exercise_Goal_50_Met,
+    `Met exercise goal (percentage of sessions)` = Met_Activity_Goal
+  ) %>% 
+  mutate(
+    `Lost 7 percent during core` = ifelse(
+      `Lost 7 percent during core` == 1,
+      "Yes",
+      "No"
+      ),
+    `Lost 7 percent overall` = ifelse(
+      `Lost 7 percent overall` == 1,
+      "Yes",
+      "No"
+      ),
+    `Lost 5 percent during core` = ifelse(
+      `Lost 5 percent during core` == 1,
+      "Yes",
+      "No"
+    ),
+    `Lost 5 percent overall` = ifelse(
+      `Lost 5 percent overall` == 1,
+      "Yes",
+      "No"
+    ),
+    `Met fat goal` = ifelse(
+      `Met fat goal` == 1,
+      "Yes",
+      "No"
+    ),
+    `Met exercise goal at least 50 percent` = ifelse(
+      `Met exercise goal at least 50 percent` == 1,
+      "Yes",
+      "No"
+    )
   )
-
 
 ```
 
 
 # Descriptives
 
+## Comparison between included/excluded individuals
+
 ```{r}
 tab1 <- compareGroups::compareGroups(
-   ~ . - Site - Time - ID - Group - StudyID,
-  data = df.processed
+  Include ~ .- rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet,
+  df.processed
+  )
+
+compareGroups::createTable(
+  tab1,
+  show.p.overall = FALSE
+  ) %>% 
+  compareGroups::export2md()
+
+```
+
+## Summary statistics of included participants
+
+```{r}
+df.processed <- df.processed %>% 
+  filter(
+    Include == "TRUE"
+  )
+
+tab1 <- compareGroups::compareGroups(
+   ~ . - Include - rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet,
+  df.processed
   )
 
 compareGroups::createTable(
   tab1
-  )
+  ) %>% 
+  compareGroups::export2md()
+```
+
+
+# Comparison between groups
+
+## Readiness to change diet
+
+```{r}
+
+chisq.test(df.processed$`Lost 7 percent overall`, df.processed$rtc_diet_groups)
 
 ```
+
+## Readiness to change exercise
+
+## Age
+
+## Starting weight
+
+## BMI
+
 
 # Regression
 
 ```{r}
-model <- glm(formula = rtc_diet*rtc_exercise + Age + Gender + BMI, data = df.processed, family = binomial) %>% summary()
+# model <- glm(formula = rtc_diet*rtc_exercise + Age + Gender + BMI, data = df.processed, family = binomial) %>% summary()
 ```
 
 
