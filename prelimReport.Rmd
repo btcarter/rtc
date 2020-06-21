@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(dplyr)
 # paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
 data.dir.path <- file.path(
   "V:",
@@ -40,12 +40,92 @@ df.processed <- df %>%
       "Male"
       ),
     rtc_diet = ifelse(
-      
+      `1a_pre` == 1,
+      "precontemplative",
+      ifelse(
+        `1a_pre` == 2,
+        "contemplative",
+        ifelse(
+          `1a_pre` == 3,
+          "preparation",
+          ifelse(
+            `1a_pre` == 4,
+            "action",
+            ifelse(
+              `1a_pre` == 5,
+              "maintain",
+              `1a_pre`
+            )
+          )
+        )
+      )
     ),
-    rtc_exercise
+    rtc_exercise = ifelse(
+      `2a_pre` == 1,
+      "precontemplative",
+      ifelse(
+        `2a_pre` == 2,
+        "contemplative",
+        ifelse(
+          `2a_pre` == 3,
+          "preparation",
+          ifelse(
+            `2a_pre` == 4,
+            "action",
+            ifelse(
+              `2a_pre` == 5,
+              "maintain",
+              `2a_pre`
+            )
+          )
+        )
+      )
+    ),
+    rtc_diet_groups = ifelse(
+      `1a_pre` == 1,
+      "Pre/Contemplative",
+      ifelse(
+        `1a_pre` == 2,
+        "Pre/Contemplative",
+        ifelse(
+          `1a_pre` == 3,
+          "Preparation",
+          ifelse(
+            `1a_pre` == 4,
+            "Action",
+            ifelse(
+              `1a_pre` == 5,
+              "Maintain",
+              `1a_pre`
+            )
+          )
+        )
+      ),
+      rtc_exercise_groups = ifelse(
+      `2a_pre` == 1,
+      "Pre/Contemplative",
+      ifelse(
+        `2a_pre` == 2,
+        "Pre/Contemplative",
+        ifelse(
+          `2a_pre` == 3,
+          "Preparation",
+          ifelse(
+            `2a_pre` == 4,
+            "Action",
+            ifelse(
+              `2a_pre` == 5,
+              "Maintain",
+              `2a_pre`
+            )
+          )
+        )
+      )
+    )
   ) %>% 
   filter(
-    !is.na(`1a_pre`)
+    !is.na(`1a_pre`),
+    !is.na(`2a_pre`)
   ) %>% 
   select(
     Gender,
