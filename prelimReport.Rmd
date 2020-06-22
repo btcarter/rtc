@@ -284,26 +284,19 @@ What can we predict?
 
 ```{r}
 
-binary_vars <- c(
-  "Maximum weight lost",
-  "Percent weight lost",
-  "Lost 7 percent during core",
-  "Lost 7 percent overall",
-  "Lost 5 percent during core",
-  "Lost 5 percent overall",
-  "Met fat goal",
-  "Met exercise goal at least 50 percent"
+binary_vars <- list(
+  "Lost 7 percent during core" = "Lost 7 percent during core",
+  "Lost 7 percent overall" = "Lost 7 percent overall",
+  "Lost 5 percent during core" = "Lost 5 percent during core",
+  "Lost 5 percent overall" = "Lost 5 percent overall",
+  "Met fat goal" = "Met fat goal",
+  "Met exercise goal at least 50 percent" = "Met exercise goal at least 50 percent"
   )
 
-cont_vars <- c(
-  "Core attendance",
-  "Post-core attendance",
-  "Overall attendance",
-  "Met fat goal (percentage of sessions)",
-  "Met exercise goal (percentage of sessions)"
-)
+
 
 model_log <- function(x){
+
   model <- glm(
     formula = 
       df.processed[[x]] ~ 
@@ -317,11 +310,16 @@ model_log <- function(x){
     ) %>% 
     summary()
   
-  return(model$coefficients)
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
 }
 
 model_lm <- function(x){
-  model <- glm(
+  
+  model <- lm(
     formula = 
       df.processed[[x]] ~ 
       rtc_diet_groups + 
@@ -329,13 +327,33 @@ model_lm <- function(x){
       Age +
       Gender +
       BMI, 
-    data = df.processed, 
-    family = binomial
+    data = df.processed
     ) %>% 
     summary()
   
-  return(model$coefficients)
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
 }
+
+binary_vars <- lapply(binary_vars, model_log)
+
+
+cont_vars <- list(
+  "Core attendance" = "Core attendance",
+  "Post-core attendance" = "Post-core attendance",
+  "Overall attendance" = "Overall attendance",
+  "Maximum weight lost" = "Maximum weight lost",
+  "Percent weight lost" = "Percent weight lost",
+  "Met fat goal (percentage of sessions)" = 
+    "Met fat goal (percentage of sessions)",
+  "Met exercise goal (percentage of sessions)" = 
+    "Met exercise goal (percentage of sessions)"
+)
+
+cont_vars <- lapply(cont_vars, model_lm)
 
 ```
 
