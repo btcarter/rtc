@@ -3,16 +3,16 @@ title: "Readiness to Change"
 author: "Benjamin Carter"
 date: "6/20/2020"
 output:
-  html_document:
-    code_folding: hide
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
   slidy_presentation:
     incremental: yes
   ioslides_presentation:
     incremental: yes
     widescreen: true
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -35,9 +35,6 @@ df <- readxl::read_xlsx(
   file.path(data.dir.path, "Nick_Rural16_OAT 6-11-20.xlsx")
   )
 
-df2 <- readxl::read_xlsx(
-  file.path(data.dir.path, "OAT_16S_0820_2018.xlsx")
-  )
 ```
 
 
@@ -166,36 +163,52 @@ df.processed <- df %>%
     `Met exercise goal (percentage of sessions)` = Met_Activity_Goal
   ) %>% 
   mutate(
+    rtc_diet_groups = as.factor(
+      rtc_diet_groups
+      ),
+    rtc_exercise_groups = as.factor(
+      rtc_exercise_groups
+      ),
     `Lost 7 percent during core` = ifelse(
       `Lost 7 percent during core` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
       ),
     `Lost 7 percent overall` = ifelse(
       `Lost 7 percent overall` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
       ),
     `Lost 5 percent during core` = ifelse(
       `Lost 5 percent during core` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
     ),
     `Lost 5 percent overall` = ifelse(
       `Lost 5 percent overall` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
     ),
     `Met fat goal` = ifelse(
       `Met fat goal` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
     ),
     `Met exercise goal at least 50 percent` = ifelse(
       `Met exercise goal at least 50 percent` == 1,
-      "Yes",
-      "No"
+      TRUE,
+      FALSE
     )
+  )
+
+df.processed$rtc_diet_groups <- factor(
+  df.processed$rtc_diet_groups,
+  levels = c("Pre/Contemplative", "Preparation", "Action", "Maintain")
+  )
+
+df.processed$rtc_exercise_groups <- factor(
+  df.processed$rtc_exercise_groups,
+  levels = c("Pre/Contemplative", "Preparation", "Action", "Maintain")
   )
 
 ```
@@ -245,7 +258,14 @@ compareGroups::createTable(
 
 ```{r}
 
-chisq.test(df.processed$`Lost 7 percent overall`, df.processed$rtc_diet_groups)
+chisq <- gmodels::CrossTable(
+  df.processed$rtc_diet_groups,
+  df.processed$`Lost 7 percent overall`,
+  chisq = TRUE
+  )
+
+table(df.processed$`Lost 7 percent overall`,
+  df.processed$rtc_diet_groups)
 
 ```
 
@@ -258,10 +278,50 @@ chisq.test(df.processed$`Lost 7 percent overall`, df.processed$rtc_diet_groups)
 ## BMI
 
 
-# Regression
+# Models
+
+What can we predict?
 
 ```{r}
-# model <- glm(formula = rtc_diet*rtc_exercise + Age + Gender + BMI, data = df.processed, family = binomial) %>% summary()
+
+binary_vars <- c(
+  "Maximum weight lost",
+  "Percent weight lost",
+  "Lost 7 percent during core",
+  "Lost 7 percent overall",
+  "Lost 5 percent during core",
+  "Lost 5 percent overall",
+  "Met fat goal",
+  "Met exercise goal at least 50 percent"
+  )
+
+cont_vars <- c(
+  "Core attendance",
+  "Post-core attendance",
+  "Overall attendance",
+  "Met fat goal (percentage of sessions)",
+  "Met exercise goal (percentage of sessions)"
+)
+
+model_it <- function(x){
+  model <- glm(
+    formula = 
+      df.processed[["Lost 7 percent overall"]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups + 
+      Age +
+      Gender +
+      BMI, 
+    data = df.processed, 
+    family = binomial
+    ) %>% 
+    summary()
+  
+  return(model$coefficients)
+}
+
+
+
 ```
 
 
