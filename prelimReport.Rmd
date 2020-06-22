@@ -303,10 +303,10 @@ cont_vars <- c(
   "Met exercise goal (percentage of sessions)"
 )
 
-model_it <- function(x){
+model_log <- function(x){
   model <- glm(
     formula = 
-      df.processed[["Lost 7 percent overall"]] ~ 
+      df.processed[[x]] ~ 
       rtc_diet_groups + 
       rtc_exercise_groups + 
       Age +
@@ -320,7 +320,22 @@ model_it <- function(x){
   return(model$coefficients)
 }
 
-
+model_lm <- function(x){
+  model <- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups + 
+      Age +
+      Gender +
+      BMI, 
+    data = df.processed, 
+    family = binomial
+    ) %>% 
+    summary()
+  
+  return(model$coefficients)
+}
 
 ```
 
