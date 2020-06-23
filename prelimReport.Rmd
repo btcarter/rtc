@@ -252,37 +252,11 @@ compareGroups::createTable(
 ```
 
 
-# Comparison between groups
+# Comparison of categorical variables by readiness to change
 
 ## Readiness to change diet
 
-```{r}
-
-chisq <- gmodels::CrossTable(
-  df.processed$rtc_diet_groups,
-  df.processed$`Lost 7 percent overall`,
-  chisq = TRUE
-  )
-
-table(df.processed$`Lost 7 percent overall`,
-  df.processed$rtc_diet_groups)
-
-```
-
-## Readiness to change exercise
-
-## Age
-
-## Starting weight
-
-## BMI
-
-
-# Models
-
-What can we predict?
-
-```{r}
+```{r categoricals}
 
 binary_vars <- list(
   "Lost 7 percent during core" = "Lost 7 percent during core",
@@ -293,53 +267,43 @@ binary_vars <- list(
   "Met exercise goal at least 50 percent" = "Met exercise goal at least 50 percent"
   )
 
-
-
-model_log <- function(x){
-
-  model <- glm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups + 
-      Age +
-      Gender +
-      BMI, 
-    data = df.processed, 
-    family = binomial
-    ) %>% 
-    summary()
-  
-  return(
-    as.data.frame(
-      model$coefficients
-      )
-    )
+chi_diet <- function(x){
+  chisq <- gmodels::CrossTable(
+    df.processed$rtc_diet_groups,
+    df.processed[[x]],
+    chisq = TRUE
+  )
+  return(chisq)
 }
 
-model_lm <- function(x){
-  
-  model <- lm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups + 
-      Age +
-      Gender +
-      BMI, 
-    data = df.processed
-    ) %>% 
-    summary()
-  
-  return(
-    as.data.frame(
-      model$coefficients
-      )
-    )
+chis.diet <- lapply(binary_vars, chi_diet)
+chis.diet
+
+```
+
+## Readiness to change exercise
+
+```{r}
+
+chi_exercise <- function(x){
+  chisq <- gmodels::CrossTable(
+    df.processed$rtc_exercise_groups,
+    df.processed[[x]],
+    chisq = TRUE
+  )
+  return(chisq)
 }
 
-binary_vars <- lapply(binary_vars, model_log)
+chis.exercise <- lapply(binary_vars, chi_exercise)
+chis.exercise
 
+```
+
+# Comparison of categorical variables by readiness to change
+
+## Readiness to change diet
+
+```{r continuous}
 
 cont_vars <- list(
   "Core attendance" = "Core attendance",
@@ -353,7 +317,97 @@ cont_vars <- list(
     "Met exercise goal (percentage of sessions)"
 )
 
-cont_vars <- lapply(cont_vars, model_lm)
+aov_readiness <- function(x, y){
+  aov.results <- aov(
+    df.processed[[x]] ~ df.processed[[y]],
+    data = df.processed
+      )
+  
+  return(aov.results)
+}
+
+aov_diet <- lapply(cont_vars, aov_readiness, y = "rtc_diet_groups")
+
+lapply(aov_diet, summary)
+
+```
+
+## Readiness to change exercise
+
+```{r continuous}
+
+aov_exercise <- lapply(cont_vars, aov_readiness, y = "rtc_exercise_groups")
+
+lapply(aov_exercise, summary)
+
+```
+
+# Predictive models
+
+Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following terms were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. No interactions were included in either model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
+
+## Logistic models for categorical outcomes
+
+```{r}
+
+model_log <- function(x){
+
+  model <- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups + 
+      Age +
+      Gender +
+      BMI +
+      `Start weight`, 
+    data = df.processed, 
+    family = binomial
+    ) %>% 
+    summary()
+  
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
+}
+
+binary_list <- lapply(binary_vars, model_log)
+
+binary_list
+
+```
+
+## Linear model for continuous outcomes
+
+```{r}
+
+model_lm <- function(x){
+  
+  model <- lm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups + 
+      Age +
+      Gender +
+      BMI +
+      `Start weight`, 
+    data = df.processed
+    ) %>% 
+    summary()
+  
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
+}
+
+continuous_list <- lapply(cont_vars, model_lm)
+
+continuous_list
 
 ```
 
