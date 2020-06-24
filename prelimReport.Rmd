@@ -3,21 +3,22 @@ title: "Readiness to Change"
 author: "Benjamin Carter"
 date: "6/20/2020"
 output:
-  slidy_presentation:
-    incremental: yes
-  ioslides_presentation:
-    incremental: yes
-    widescreen: true
   html_document:
     code_folding: hide
     toc: yes
     toc_depth: 3
     toc_float: yes
+  ioslides_presentation:
+    incremental: yes
+    widescreen: true
+  slidy_presentation:
+    incremental: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```{r setup}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(dplyr)
+library(gmodels)
 # paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
 data.dir.path <- file.path(
   "V:",
@@ -30,7 +31,7 @@ data.dir.path <- file.path(
   )
 ```
 
-```{r loadData, include=FALSE}
+```{r loadData}
 df <- readxl::read_xlsx(
   file.path(data.dir.path, "Nick_Rural16_OAT 6-11-20.xlsx")
   )
@@ -218,15 +219,14 @@ df.processed$rtc_exercise_groups <- factor(
 
 ## Comparison between included/excluded individuals
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 tab1 <- compareGroups::compareGroups(
   Include ~ .- rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet,
   df.processed
   )
 
 compareGroups::createTable(
-  tab1,
-  show.p.overall = FALSE
+  tab1
   ) %>% 
   compareGroups::export2md()
 
@@ -256,7 +256,7 @@ compareGroups::createTable(
 
 ## Readiness to change diet
 
-```{r categoricals}
+```{r categoricals, message=FALSE,warning=FALSE,echo=FALSE}
 
 binary_vars <- list(
   "Lost 7 percent during core" = "Lost 7 percent during core",
@@ -268,16 +268,20 @@ binary_vars <- list(
   )
 
 chi_diet <- function(x){
-  chisq <- gmodels::CrossTable(
+  chisq <- chisq.test(
     df.processed$rtc_diet_groups,
     df.processed[[x]],
-    chisq = TRUE
+    correct = TRUE
   )
   return(chisq)
 }
 
 chis.diet <- lapply(binary_vars, chi_diet)
-chis.diet
+
+for (i in names(chis.diet)){
+  print(i)
+  print(chis.diet[[i]])
+}
 
 ```
 
@@ -286,20 +290,24 @@ chis.diet
 ```{r}
 
 chi_exercise <- function(x){
-  chisq <- gmodels::CrossTable(
+  chisq <- chisq.test(
     df.processed$rtc_exercise_groups,
     df.processed[[x]],
-    chisq = TRUE
+    correct = TRUE
   )
   return(chisq)
 }
 
 chis.exercise <- lapply(binary_vars, chi_exercise)
-chis.exercise
+
+for (i in names(chis.exercise)){
+  print(i)
+  print(chis.exercise[[i]])
+}
 
 ```
 
-# Comparison of categorical variables by readiness to change
+# Comparison of continuous variables by readiness to change
 
 ## Readiness to change diet
 
@@ -334,12 +342,42 @@ lapply(aov_diet, summary)
 
 ## Readiness to change exercise
 
-```{r continuous}
+```{r continuous2}
 
 aov_exercise <- lapply(cont_vars, aov_readiness, y = "rtc_exercise_groups")
 
 lapply(aov_exercise, summary)
 
+```
+
+## Interactions in readiness to change
+
+```{r interactions}
+
+cross.both <- chisq.test(
+  df.processed$rtc_diet_groups,
+  df.processed$rtc_exercise_groups,
+  correct = TRUE
+  )
+
+cv.test = function(x,y) {
+  CV = sqrt(chisq.test(x, y, correct=FALSE)$statistic /
+    (length(x) * (min(length(unique(x)),length(unique(y))) - 1)))
+  return(as.numeric(CV))
+}
+
+CV <- cv.test(
+  df.processed$rtc_diet_groups,
+  df.processed$rtc_exercise_groups
+  )
+
+# fmla <-  as.formula("df.processed$`Maximum weight lost` ~ df.processed$rtc_diet_groups*df.processed$rtc_exercise_groups, df.processed")
+```
+
+Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This interaction is incorporated into the predictive models.
+
+```{r}
+knitr::kable(as.data.frame(cross.both$observed) %>% tidyr::spread(key = Var2, value = Freq))
 ```
 
 # Predictive models
@@ -355,7 +393,7 @@ model_log <- function(x){
   model <- glm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups + 
+      rtc_diet_groups * 
       rtc_exercise_groups + 
       Age +
       Gender +
@@ -388,7 +426,7 @@ model_lm <- function(x){
   model <- lm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups + 
+      rtc_diet_groups * 
       rtc_exercise_groups + 
       Age +
       Gender +
@@ -398,11 +436,12 @@ model_lm <- function(x){
     ) %>% 
     summary()
   
-  return(
-    as.data.frame(
-      model$coefficients
-      )
-    )
+  a <- data.frame(
+        "Beta estimate" = model$coefficients[,1],
+        "p-value" = model$coefficients[,4]
+        )
+  
+  return(a)
 }
 
 continuous_list <- lapply(cont_vars, model_lm)
