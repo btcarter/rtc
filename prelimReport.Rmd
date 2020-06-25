@@ -540,7 +540,26 @@ model_log <- function(x){
 
 binary_list <- lapply(binary_vars, model_log)
 
-binary_list
+for (i in names(binary_list)){
+  
+  b <- binary_list[[i]]$`Pr(>|z|)`
+  
+  sig.p <- ifelse(
+    0.05 >=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(" ")
+    print(i)
+    print(binary_list[[i]])
+    print(" ")
+  }  
+}
 
 ```
 
@@ -573,7 +592,26 @@ model_lm <- function(x){
 
 continuous_list <- lapply(cont_vars, model_lm)
 
-continuous_list
+for (i in names(continuous_list)){
+  
+  b <- continuous_list[[i]]$p.value
+  
+  sig.p <- ifelse(
+    0.05 >=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(" ")
+    print(i)
+    print(continuous_list[[i]])
+    print(" ")
+  }  
+}
 
 ```
 

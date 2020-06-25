@@ -2042,6 +2042,7 @@ Met exercise goal (percentage of sessions)
 </div>
 <div id="comparison-of-categorical-variables-by-readiness-to-change" class="section level1">
 <h1>Comparison of categorical variables by readiness to change</h1>
+<p>Categorical variables (i.e. variables that were nominal rather than quantitative in nature) we examined in relation to readiness to change diet or exercise using a Pearson’s chi-square analysis. What follows are the reported <span class="math inline">\(\chi^2\)</span> statistics, degrees of freedom, and p-values from each test.</p>
 <div id="readiness-to-change-diet" class="section level2">
 <h2>Readiness to change diet</h2>
 <table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -2162,63 +2163,158 @@ Met exercise goal at least 50 percent
 
 chis.exercise &lt;- lapply(binary_vars, chi_exercise)
 
+df.stats &lt;- data.frame(
+  &quot;Variable&quot;=character(),
+  &quot;X-squared&quot;=numeric(),
+  &quot;df&quot;=integer(),
+  &quot;p-value&quot;=integer(),
+  row.names = NULL
+)
+
 for (i in names(chis.exercise)){
-  print(i)
-  print(chis.exercise[[i]])
-}</code></pre>
-<pre><code>## [1] &quot;Lost 7 percent during core&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 7.9103, df = 3, p-value = 0.0479
-## 
-## [1] &quot;Lost 7 percent overall&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 10.221, df = 3, p-value = 0.01678
-## 
-## [1] &quot;Lost 5 percent during core&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 7.0265, df = 3, p-value = 0.07106
-## 
-## [1] &quot;Lost 5 percent overall&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 7.044, df = 3, p-value = 0.07051
-## 
-## [1] &quot;Met fat goal&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 1.1159, df = 3, p-value = 0.7732
-## 
-## [1] &quot;Met exercise goal at least 50 percent&quot;
-## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  df.processed$rtc_exercise_groups and df.processed[[x]]
-## X-squared = 4.2957, df = 3, p-value = 0.2313</code></pre>
+  row.to.add &lt;- data.frame(
+    &quot;Variable&quot; = i,
+    &quot;X-squared&quot; = chis.exercise[[i]]$statistic,
+    &quot;df&quot; = chis.exercise[[i]]$parameter,
+    &quot;p-value&quot; = chis.exercise[[i]]$p.value,
+    row.names = NULL
+    )
+  df.stats &lt;- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = &quot;pandoc&quot;
+) %&gt;% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      &quot;striped&quot;, 
+      &quot;hover&quot;, 
+      &quot;responsive&quot;
+      )
+    )</code></pre>
+<table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+X.squared
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Lost 7 percent during core
+</td>
+<td style="text-align:right;">
+7.910334
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0479016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lost 7 percent overall
+</td>
+<td style="text-align:right;">
+10.220643
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0167808
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lost 5 percent during core
+</td>
+<td style="text-align:right;">
+7.026475
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0710587
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lost 5 percent overall
+</td>
+<td style="text-align:right;">
+7.044003
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0705084
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met fat goal
+</td>
+<td style="text-align:right;">
+1.115948
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.7732256
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met exercise goal at least 50 percent
+</td>
+<td style="text-align:right;">
+4.295693
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.2312541
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="comparison-of-continuous-variables-by-readiness-to-change" class="section level1">
 <h1>Comparison of continuous variables by readiness to change</h1>
+<p>The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.</p>
 <div id="readiness-to-change-diet-1" class="section level2">
 <h2>Readiness to change diet</h2>
 <pre class="r"><code>cont_vars &lt;- list(
-  &quot;Core attendance&quot; = &quot;Core attendance&quot;,
-  &quot;Post-core attendance&quot; = &quot;Post-core attendance&quot;,
-  &quot;Overall attendance&quot; = &quot;Overall attendance&quot;,
-  &quot;Maximum weight lost&quot; = &quot;Maximum weight lost&quot;,
-  &quot;Percent weight lost&quot; = &quot;Percent weight lost&quot;,
+  &quot;Core attendance&quot; = 
+    &quot;Core attendance&quot;,
+  &quot;Post-core attendance&quot; = 
+    &quot;Post-core attendance&quot;,
+  &quot;Overall attendance&quot; = 
+    &quot;Overall attendance&quot;,
+  &quot;Maximum weight lost&quot; = 
+    &quot;Maximum weight lost&quot;,
+  &quot;Percent weight lost&quot; = 
+    &quot;Percent weight lost&quot;,
   &quot;Met fat goal (percentage of sessions)&quot; = 
     &quot;Met fat goal (percentage of sessions)&quot;,
   &quot;Met exercise goal (percentage of sessions)&quot; = 
@@ -2281,6 +2377,155 @@ lapply(aov_diet, summary)</code></pre>
 ##                    Df Sum Sq Mean Sq F value Pr(&gt;F)
 ## df.processed[[y]]   3  0.154  0.0515   0.342  0.795
 ## Residuals         167 25.114  0.1504</code></pre>
+<pre class="r"><code>df.stats &lt;- data.frame(
+  &quot;Variable&quot;=character(),
+  &quot;F-statistic&quot;=numeric(),
+  &quot;df&quot;=integer(),
+  &quot;p-value&quot;=integer(),
+  row.names = NULL
+)
+
+for (i in names(aov_diet)){
+  a &lt;- summary(aov_diet[[i]])
+  row.to.add &lt;- data.frame(
+    &quot;Variable&quot; = i,
+    &quot;F-statistic&quot; = a[[1]]$`F value`[1],
+    &quot;df&quot; = a[[1]]$`Df`[1],
+    &quot;p-value&quot; = a[[1]]$`Pr(&gt;F)`[1],
+    row.names = NULL
+    )
+  df.stats &lt;- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = &quot;pandoc&quot;
+) %&gt;% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      &quot;striped&quot;, 
+      &quot;hover&quot;, 
+      &quot;responsive&quot;
+      )
+    )</code></pre>
+<table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+F.statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Core attendance
+</td>
+<td style="text-align:right;">
+2.8905184
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0370821
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post-core attendance
+</td>
+<td style="text-align:right;">
+2.5524217
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0573231
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Overall attendance
+</td>
+<td style="text-align:right;">
+3.3279723
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0210478
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maximum weight lost
+</td>
+<td style="text-align:right;">
+2.7742875
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0430835
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Percent weight lost
+</td>
+<td style="text-align:right;">
+2.9276471
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0353454
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met fat goal (percentage of sessions)
+</td>
+<td style="text-align:right;">
+1.6024492
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.1907568
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met exercise goal (percentage of sessions)
+</td>
+<td style="text-align:right;">
+0.3424455
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.7946595
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="readiness-to-change-exercise-1" class="section level2">
 <h2>Readiness to change exercise</h2>
@@ -2329,9 +2574,159 @@ lapply(aov_exercise, summary)</code></pre>
 ##                    Df Sum Sq Mean Sq F value Pr(&gt;F)
 ## df.processed[[y]]   3  0.684  0.2280   1.549  0.204
 ## Residuals         167 24.585  0.1472</code></pre>
+<pre class="r"><code>df.stats &lt;- data.frame(
+  &quot;Variable&quot;=character(),
+  &quot;F-statistic&quot;=numeric(),
+  &quot;df&quot;=integer(),
+  &quot;p-value&quot;=integer(),
+  row.names = NULL
+)
+
+for (i in names(aov_exercise)){
+  a &lt;- summary(aov_exercise[[i]])
+  row.to.add &lt;- data.frame(
+    &quot;Variable&quot; = i,
+    &quot;F-statistic&quot; = a[[1]]$`F value`[1],
+    &quot;df&quot; = a[[1]]$`Df`[1],
+    &quot;p-value&quot; = a[[1]]$`Pr(&gt;F)`[1],
+    row.names = NULL
+    )
+  df.stats &lt;- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = &quot;pandoc&quot;
+) %&gt;% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      &quot;striped&quot;, 
+      &quot;hover&quot;, 
+      &quot;responsive&quot;
+      )
+    )</code></pre>
+<table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+F.statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Core attendance
+</td>
+<td style="text-align:right;">
+3.1641206
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0260284
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Post-core attendance
+</td>
+<td style="text-align:right;">
+0.7944753
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.4985609
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Overall attendance
+</td>
+<td style="text-align:right;">
+2.7571808
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0440444
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maximum weight lost
+</td>
+<td style="text-align:right;">
+2.2939417
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0798168
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Percent weight lost
+</td>
+<td style="text-align:right;">
+2.6356100
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.0515094
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met fat goal (percentage of sessions)
+</td>
+<td style="text-align:right;">
+0.5346067
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.6591788
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Met exercise goal (percentage of sessions)
+</td>
+<td style="text-align:right;">
+1.5487655
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.2038433
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="interactions-in-readiness-to-change" class="section level2">
-<h2>Interactions in readiness to change</h2>
+</div>
+<div id="interactions-in-readiness-to-change" class="section level1">
+<h1>Interactions in readiness to change</h1>
 <pre class="r"><code>cross.both &lt;- chisq.test(
   df.processed$rtc_diet_groups,
   df.processed$rtc_exercise_groups,
@@ -2444,10 +2839,9 @@ Maintain
 </tbody>
 </table>
 </div>
-</div>
 <div id="predictive-models" class="section level1">
 <h1>Predictive models</h1>
-<p>Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following terms were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. No interactions were included in either model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).</p>
+<p>Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).</p>
 <div id="logistic-models-for-categorical-outcomes" class="section level2">
 <h2>Logistic models for categorical outcomes</h2>
 <pre class="r"><code>model_log &lt;- function(x){
@@ -2475,8 +2869,28 @@ Maintain
 
 binary_list &lt;- lapply(binary_vars, model_log)
 
-binary_list</code></pre>
-<pre><code>## $`Lost 7 percent during core`
+for (i in names(binary_list)){
+  
+  b &lt;- binary_list[[i]]$`Pr(&gt;|z|)`
+  
+  sig.p &lt;- ifelse(
+    0.05 &gt;=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(&quot; &quot;)
+    print(i)
+    print(binary_list[[i]])
+    print(&quot; &quot;)
+  }  
+}</code></pre>
+<pre><code>## [1] &quot; &quot;
+## [1] &quot;Lost 7 percent during core&quot;
 ##                                                                Estimate
 ## (Intercept)                                                -4.420598551
 ## rtc_diet_groupsPreparation                                -15.658920446
@@ -2553,396 +2967,7 @@ binary_list</code></pre>
 ## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.99979309
 ## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.99997607
 ## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.99542504
-## 
-## $`Lost 7 percent overall`
-##                                                                Estimate
-## (Intercept)                                                -3.619894052
-## rtc_diet_groupsPreparation                                -15.718865144
-## rtc_diet_groupsAction                                      16.121365723
-## rtc_diet_groupsMaintain                                     0.017589262
-## rtc_exercise_groupsPreparation                            -15.801159480
-## rtc_exercise_groupsAction                                 -15.976499004
-## rtc_exercise_groupsMaintain                               -15.922957178
-## Age                                                         0.030113828
-## GenderMale                                                 -0.109934378
-## BMI                                                        -0.037535139
-## `Start weight`                                              0.007471347
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  33.258021290
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation        0.478653268
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     16.757356555
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       32.272182408
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             1.094367873
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          -0.182217421
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     32.172366286
-##                                                             Std. Error
-## (Intercept)                                               1.740816e+00
-## rtc_diet_groupsPreparation                                3.956180e+03
-## rtc_diet_groupsAction                                     3.956180e+03
-## rtc_diet_groupsMaintain                                   4.308082e+03
-## rtc_exercise_groupsPreparation                            2.244123e+03
-## rtc_exercise_groupsAction                                 2.233016e+03
-## rtc_exercise_groupsMaintain                               3.956180e+03
-## Age                                                       1.642243e-02
-## GenderMale                                                7.808743e-01
-## BMI                                                       6.259894e-02
-## `Start weight`                                            1.062185e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 4.548346e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      4.548346e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    4.857537e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      4.542876e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           4.542876e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         5.599486e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    5.594884e+03
-##                                                                 z value
-## (Intercept)                                               -2.079423e+00
-## rtc_diet_groupsPreparation                                -3.973243e-03
-## rtc_diet_groupsAction                                      4.074982e-03
-## rtc_diet_groupsMaintain                                    4.082852e-06
-## rtc_exercise_groupsPreparation                            -7.041128e-03
-## rtc_exercise_groupsAction                                 -7.154672e-03
-## rtc_exercise_groupsMaintain                               -4.024831e-03
-## Age                                                        1.833701e+00
-## GenderMale                                                -1.407837e-01
-## BMI                                                       -5.996130e-01
-## `Start weight`                                             7.033941e-01
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  7.312113e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation       1.052368e-04
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     3.449764e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       7.103910e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction            2.408976e-04
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -3.254181e-05
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     5.750319e-03
-##                                                             Pr(&gt;|z|)
-## (Intercept)                                               0.03757845
-## rtc_diet_groupsPreparation                                0.99682982
-## rtc_diet_groupsAction                                     0.99674864
-## rtc_diet_groupsMaintain                                   0.99999674
-## rtc_exercise_groupsPreparation                            0.99438204
-## rtc_exercise_groupsAction                                 0.99429145
-## rtc_exercise_groupsMaintain                               0.99678866
-## Age                                                       0.06669842
-## GenderMale                                                0.88804081
-## BMI                                                       0.54876421
-## `Start weight`                                            0.48181019
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.99416583
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.99991603
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.99724749
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.99433195
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.99980779
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.99997404
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.99541193
-## 
-## $`Lost 5 percent during core`
-##                                                                Estimate
-## (Intercept)                                                -2.415123995
-## rtc_diet_groupsPreparation                                -14.740933687
-## rtc_diet_groupsAction                                      16.146080191
-## rtc_diet_groupsMaintain                                     0.199347213
-## rtc_exercise_groupsPreparation                              1.311141506
-## rtc_exercise_groupsAction                                   0.856904424
-## rtc_exercise_groupsMaintain                               -15.082198783
-## Age                                                         0.014048384
-## GenderMale                                                  0.125301504
-## BMI                                                         0.048253097
-## `Start weight`                                             -0.008290707
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  15.468560507
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -16.078554967
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     -0.556029705
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       14.982746685
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -15.020223417
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -16.158966677
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     31.592971730
-##                                                             Std. Error
-## (Intercept)                                               1.636740e+00
-## rtc_diet_groupsPreparation                                2.399545e+03
-## rtc_diet_groupsAction                                     2.399545e+03
-## rtc_diet_groupsMaintain                                   2.621179e+03
-## rtc_exercise_groupsPreparation                            1.652614e+00
-## rtc_exercise_groupsAction                                 1.651631e+00
-## rtc_exercise_groupsMaintain                               2.399545e+03
-## Age                                                       1.526251e-02
-## GenderMale                                                7.462589e-01
-## BMI                                                       6.080508e-02
-## `Start weight`                                            1.028824e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      2.399545e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    2.621180e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           2.399545e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         3.122398e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    3.393469e+03
-##                                                                 z value
-## (Intercept)                                               -1.475570e+00
-## rtc_diet_groupsPreparation                                -6.143220e-03
-## rtc_diet_groupsAction                                      6.728809e-03
-## rtc_diet_groupsMaintain                                    7.605249e-05
-## rtc_exercise_groupsPreparation                             7.933741e-01
-## rtc_exercise_groupsAction                                  5.188232e-01
-## rtc_exercise_groupsMaintain                               -6.285441e-03
-## Age                                                        9.204507e-01
-## GenderMale                                                 1.679062e-01
-## BMI                                                        7.935702e-01
-## `Start weight`                                            -8.058429e-01
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  6.446455e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -6.700667e-03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    -2.121296e-04
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       6.243994e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -6.259612e-03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -5.175179e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     9.309934e-03
-##                                                            Pr(&gt;|z|)
-## (Intercept)                                               0.1400594
-## rtc_diet_groupsPreparation                                0.9950985
-## rtc_diet_groupsAction                                     0.9946312
-## rtc_diet_groupsMaintain                                   0.9999393
-## rtc_exercise_groupsPreparation                            0.4275599
-## rtc_exercise_groupsAction                                 0.6038840
-## rtc_exercise_groupsMaintain                               0.9949850
-## Age                                                       0.3573373
-## GenderMale                                                0.8666571
-## BMI                                                       0.4274457
-## `Start weight`                                            0.4203335
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.9948565
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.9946537
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.9998307
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.9950180
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.9950056
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9958708
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.9925719
-## 
-## $`Lost 5 percent overall`
-##                                                               Estimate
-## (Intercept)                                                -1.98539668
-## rtc_diet_groupsPreparation                                -14.75032920
-## rtc_diet_groupsAction                                      16.99993803
-## rtc_diet_groupsMaintain                                     0.14984850
-## rtc_exercise_groupsPreparation                              1.22490937
-## rtc_exercise_groupsAction                                   0.86101059
-## rtc_exercise_groupsMaintain                               -15.10144318
-## Age                                                         0.00932021
-## GenderMale                                                  0.48852634
-## BMI                                                         0.05440654
-## `Start weight`                                             -0.01016403
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  15.60326110
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -16.85128800
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     -0.41144009
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       15.01797291
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -15.88287082
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -16.08113166
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     31.54488359
-##                                                             Std. Error
-## (Intercept)                                               1.618686e+00
-## rtc_diet_groupsPreparation                                2.399545e+03
-## rtc_diet_groupsAction                                     2.399545e+03
-## rtc_diet_groupsMaintain                                   2.622899e+03
-## rtc_exercise_groupsPreparation                            1.652864e+00
-## rtc_exercise_groupsAction                                 1.648241e+00
-## rtc_exercise_groupsMaintain                               2.399545e+03
-## Age                                                       1.520615e-02
-## GenderMale                                                7.536292e-01
-## BMI                                                       6.088486e-02
-## `Start weight`                                            1.029870e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      2.399545e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    2.622900e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           2.399545e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         3.123763e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    3.393469e+03
-##                                                                 z value
-## (Intercept)                                               -1.226548e+00
-## rtc_diet_groupsPreparation                                -6.147136e-03
-## rtc_diet_groupsAction                                      7.084651e-03
-## rtc_diet_groupsMaintain                                    5.713087e-05
-## rtc_exercise_groupsPreparation                             7.410830e-01
-## rtc_exercise_groupsAction                                  5.223816e-01
-## rtc_exercise_groupsMaintain                               -6.293461e-03
-## Age                                                        6.129239e-01
-## GenderMale                                                 6.482317e-01
-## BMI                                                        8.935972e-01
-## `Start weight`                                            -9.869233e-01
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  6.502591e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -7.022700e-03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    -1.568646e-04
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       6.258674e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -6.619117e-03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -5.148000e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     9.295763e-03
-##                                                            Pr(&gt;|z|)
-## (Intercept)                                               0.2199923
-## rtc_diet_groupsPreparation                                0.9950953
-## rtc_diet_groupsAction                                     0.9943473
-## rtc_diet_groupsMaintain                                   0.9999544
-## rtc_exercise_groupsPreparation                            0.4586431
-## rtc_exercise_groupsAction                                 0.6014046
-## rtc_exercise_groupsMaintain                               0.9949786
-## Age                                                       0.5399267
-## GenderMale                                                0.5168351
-## BMI                                                       0.3715375
-## `Start weight`                                            0.3236802
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.9948117
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.9943967
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.9998748
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.9950063
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.9947187
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9958925
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.9925832
-## 
-## $`Met fat goal`
-##                                                                Estimate
-## (Intercept)                                                -0.696844623
-## rtc_diet_groupsPreparation                                -16.476167805
-## rtc_diet_groupsAction                                      16.653716580
-## rtc_diet_groupsMaintain                                    14.955432277
-## rtc_exercise_groupsPreparation                             -0.447051816
-## rtc_exercise_groupsAction                                  -1.424425387
-## rtc_exercise_groupsMaintain                               -16.120168890
-## Age                                                         0.004303009
-## GenderMale                                                 -0.209909905
-## BMI                                                        -0.002579067
-## `Start weight`                                              0.006888162
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  16.632081660
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -16.341426640
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    -13.747543945
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       17.211381627
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -15.149035197
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -14.281039631
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     32.098033517
-##                                                             Std. Error
-## (Intercept)                                               1.462514e+00
-## rtc_diet_groupsPreparation                                1.455398e+03
-## rtc_diet_groupsAction                                     1.455398e+03
-## rtc_diet_groupsMaintain                                   1.455398e+03
-## rtc_exercise_groupsPreparation                            1.508688e+00
-## rtc_exercise_groupsAction                                 1.512809e+00
-## rtc_exercise_groupsMaintain                               1.455398e+03
-## Age                                                       1.489632e-02
-## GenderMale                                                7.666665e-01
-## BMI                                                       6.379517e-02
-## `Start weight`                                            1.075840e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 1.455398e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      1.455399e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    1.455399e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      1.455398e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           1.455399e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         1.455399e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    2.058243e+03
-##                                                                z value
-## (Intercept)                                               -0.476470439
-## rtc_diet_groupsPreparation                                -0.011320732
-## rtc_diet_groupsAction                                      0.011442723
-## rtc_diet_groupsMaintain                                    0.010275838
-## rtc_exercise_groupsPreparation                            -0.296318329
-## rtc_exercise_groupsAction                                 -0.941576205
-## rtc_exercise_groupsMaintain                               -0.011076126
-## Age                                                        0.288863854
-## GenderMale                                                -0.273795577
-## BMI                                                       -0.040427317
-## `Start weight`                                             0.640258960
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  0.011427855
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -0.011228144
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    -0.009445895
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       0.011825890
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -0.010408856
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -0.009812456
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     0.015594869
-##                                                            Pr(&gt;|z|)
-## (Intercept)                                               0.6337393
-## rtc_diet_groupsPreparation                                0.9909676
-## rtc_diet_groupsAction                                     0.9908702
-## rtc_diet_groupsMaintain                                   0.9918012
-## rtc_exercise_groupsPreparation                            0.7669870
-## rtc_exercise_groupsAction                                 0.3464097
-## rtc_exercise_groupsMaintain                               0.9911627
-## Age                                                       0.7726856
-## GenderMale                                                0.7842417
-## BMI                                                       0.9677525
-## `Start weight`                                            0.5220043
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.9908821
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.9910414
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.9924634
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.9905645
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.9916951
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9921709
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.9875576
-## 
-## $`Met exercise goal at least 50 percent`
-##                                                                Estimate
-## (Intercept)                                                -0.360507457
-## rtc_diet_groupsPreparation                                -16.298767375
-## rtc_diet_groupsAction                                       0.130256286
-## rtc_diet_groupsMaintain                                   -16.956420555
-## rtc_exercise_groupsPreparation                             -0.597056851
-## rtc_exercise_groupsAction                                  -0.710325938
-## rtc_exercise_groupsMaintain                                16.444243772
-## Age                                                         0.014438489
-## GenderMale                                                  1.028742578
-## BMI                                                         0.008617142
-## `Start weight`                                             -0.004245680
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  17.307628630
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation       -0.248550125
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     18.370288285
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       17.156126064
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             1.906401022
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          17.555296715
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain      0.682524982
-##                                                             Std. Error
-## (Intercept)                                               1.376697e+00
-## rtc_diet_groupsPreparation                                2.399545e+03
-## rtc_diet_groupsAction                                     2.627403e+03
-## rtc_diet_groupsMaintain                                   2.399545e+03
-## rtc_exercise_groupsPreparation                            1.499116e+00
-## rtc_exercise_groupsAction                                 1.462795e+00
-## rtc_exercise_groupsMaintain                               2.399545e+03
-## Age                                                       1.464262e-02
-## GenderMale                                                8.062598e-01
-## BMI                                                       6.175690e-02
-## `Start weight`                                            1.039258e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      2.627403e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    2.399545e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      2.399545e+03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           2.627403e+03
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         2.399546e+03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    3.393469e+03
-##                                                                 z value
-## (Intercept)                                               -2.618641e-01
-## rtc_diet_groupsPreparation                                -6.792441e-03
-## rtc_diet_groupsAction                                      4.957607e-05
-## rtc_diet_groupsMaintain                                   -7.066515e-03
-## rtc_exercise_groupsPreparation                            -3.982727e-01
-## rtc_exercise_groupsAction                                 -4.855950e-01
-## rtc_exercise_groupsMaintain                                6.853068e-03
-## Age                                                        9.860592e-01
-## GenderMale                                                 1.275944e+00
-## BMI                                                        1.395333e-01
-## `Start weight`                                            -4.085299e-01
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  7.212879e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -9.459916e-05
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     7.655737e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       7.149741e-03
-## rtc_diet_groupsAction:rtc_exercise_groupsAction            7.255838e-04
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          7.316092e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     2.011290e-04
-##                                                            Pr(&gt;|z|)
-## (Intercept)                                               0.7934262
-## rtc_diet_groupsPreparation                                0.9945805
-## rtc_diet_groupsAction                                     0.9999604
-## rtc_diet_groupsMaintain                                   0.9943618
-## rtc_exercise_groupsPreparation                            0.6904292
-## rtc_exercise_groupsAction                                 0.6272543
-## rtc_exercise_groupsMaintain                               0.9945321
-## Age                                                       0.3241041
-## GenderMale                                                0.2019752
-## BMI                                                       0.8890288
-## `Start weight`                                            0.6828847
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.9942450
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.9999245
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.9938917
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.9942954
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.9994211
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9941627
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.9998395</code></pre>
+## [1] &quot; &quot;</code></pre>
 </div>
 <div id="linear-model-for-continuous-outcomes" class="section level2">
 <h2>Linear model for continuous outcomes</h2>
@@ -2971,8 +2996,28 @@ binary_list</code></pre>
 
 continuous_list &lt;- lapply(cont_vars, model_lm)
 
-continuous_list</code></pre>
-<pre><code>## $`Core attendance`
+for (i in names(continuous_list)){
+  
+  b &lt;- continuous_list[[i]]$p.value
+  
+  sig.p &lt;- ifelse(
+    0.05 &gt;=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(&quot; &quot;)
+    print(i)
+    print(continuous_list[[i]])
+    print(&quot; &quot;)
+  }  
+}</code></pre>
+<pre><code>## [1] &quot; &quot;
+## [1] &quot;Core attendance&quot;
 ##                                                           Beta.estimate
 ## (Intercept)                                                 2.271446936
 ## rtc_diet_groupsPreparation                                 -5.375482224
@@ -3011,48 +3056,9 @@ continuous_list</code></pre>
 ## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.433672836
 ## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.799090237
 ## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.288345575
-## 
-## $`Post-core attendance`
-##                                                           Beta.estimate
-## (Intercept)                                                  0.08650158
-## rtc_diet_groupsPreparation                                  -0.58212897
-## rtc_diet_groupsAction                                        0.87652011
-## rtc_diet_groupsMaintain                                      0.10722985
-## rtc_exercise_groupsPreparation                              -0.33236208
-## rtc_exercise_groupsAction                                   -0.98968517
-## rtc_exercise_groupsMaintain                                 -0.12155784
-## Age                                                          0.02034978
-## GenderMale                                                   0.25652364
-## BMI                                                          0.04799500
-## `Start weight`                                              -0.01011687
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation    1.83490041
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation         0.02568859
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation       0.73515216
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction         2.44206034
-## rtc_diet_groupsAction:rtc_exercise_groupsAction              1.19267142
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction           -0.24155890
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain       1.49168847
-##                                                             p.value
-## (Intercept)                                               0.9436273
-## rtc_diet_groupsPreparation                                0.7677746
-## rtc_diet_groupsAction                                     0.6654231
-## rtc_diet_groupsMaintain                                   0.9577763
-## rtc_exercise_groupsPreparation                            0.7959812
-## rtc_exercise_groupsAction                                 0.4419491
-## rtc_exercise_groupsMaintain                               0.9512481
-## Age                                                       0.1128718
-## GenderMale                                                0.6943347
-## BMI                                                       0.3667465
-## `Start weight`                                            0.2569631
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.4170666
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.9913533
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.7628073
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.2854366
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.6091074
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9270059
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.5877422
-## 
-## $`Overall attendance`
+## [1] &quot; &quot;
+## [1] &quot; &quot;
+## [1] &quot;Overall attendance&quot;
 ##                                                           Beta.estimate
 ## (Intercept)                                                 2.357948517
 ## rtc_diet_groupsPreparation                                 -5.957611196
@@ -3091,8 +3097,9 @@ continuous_list</code></pre>
 ## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.436851365
 ## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.866142002
 ## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.314873509
-## 
-## $`Maximum weight lost`
+## [1] &quot; &quot;
+## [1] &quot; &quot;
+## [1] &quot;Maximum weight lost&quot;
 ##                                                           Beta.estimate
 ## (Intercept)                                                 -12.1563536
 ## rtc_diet_groupsPreparation                                    0.7348971
@@ -3131,48 +3138,9 @@ continuous_list</code></pre>
 ## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.73353486
 ## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.94613030
 ## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.84736092
-## 
-## $`Percent weight lost`
-##                                                           Beta.estimate
-## (Intercept)                                                9.985795e-03
-## rtc_diet_groupsPreparation                                 7.852600e-03
-## rtc_diet_groupsAction                                      3.342087e-02
-## rtc_diet_groupsMaintain                                    2.282394e-03
-## rtc_exercise_groupsPreparation                             3.172890e-03
-## rtc_exercise_groupsAction                                 -1.741266e-02
-## rtc_exercise_groupsMaintain                               -2.067639e-02
-## Age                                                        4.156965e-04
-## GenderMale                                                 9.497960e-03
-## BMI                                                       -4.645008e-04
-## `Start weight`                                             9.592359e-05
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  2.321018e-02
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -1.331494e-02
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     1.914101e-02
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       2.394011e-02
-## rtc_diet_groupsAction:rtc_exercise_groupsAction            1.227781e-02
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         -6.569885e-03
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     2.707229e-02
-##                                                             p.value
-## (Intercept)                                               0.7631444
-## rtc_diet_groupsPreparation                                0.8830633
-## rtc_diet_groupsAction                                     0.5427837
-## rtc_diet_groupsMaintain                                   0.9668107
-## rtc_exercise_groupsPreparation                            0.9273792
-## rtc_exercise_groupsAction                                 0.6172342
-## rtc_exercise_groupsMaintain                               0.7010641
-## Age                                                       0.2309585
-## GenderMale                                                0.5911889
-## BMI                                                       0.7467680
-## `Start weight`                                            0.6909362
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.7044402
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.8357098
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.7717153
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.6985579
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.8458386
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.9266996
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.7163347
-## 
-## $`Met fat goal (percentage of sessions)`
+## [1] &quot; &quot;
+## [1] &quot; &quot;
+## [1] &quot;Met fat goal (percentage of sessions)&quot;
 ##                                                           Beta.estimate
 ## (Intercept)                                                0.4906454728
 ## rtc_diet_groupsPreparation                                -0.6484372524
@@ -3211,47 +3179,12 @@ continuous_list</code></pre>
 ## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.44772226
 ## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.93262118
 ## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.04244043
-## 
-## $`Met exercise goal (percentage of sessions)`
-##                                                           Beta.estimate
-## (Intercept)                                                0.4650279444
-## rtc_diet_groupsPreparation                                -0.4550063101
-## rtc_diet_groupsAction                                      0.2771439599
-## rtc_diet_groupsMaintain                                   -0.1601912860
-## rtc_exercise_groupsPreparation                            -0.0625923583
-## rtc_exercise_groupsAction                                 -0.2906140729
-## rtc_exercise_groupsMaintain                                0.0637440567
-## Age                                                        0.0026934434
-## GenderMale                                                 0.1971412972
-## BMI                                                        0.0018704198
-## `Start weight`                                            -0.0009617169
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  0.5269617286
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -0.4472055406
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     0.2916315476
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       0.7168133442
-## rtc_diet_groupsAction:rtc_exercise_groupsAction            0.1531558428
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          0.3034076375
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     0.4842931967
-##                                                              p.value
-## (Intercept)                                               0.06768617
-## rtc_diet_groupsPreparation                                0.26557902
-## rtc_diet_groupsAction                                     0.50892558
-## rtc_diet_groupsMaintain                                   0.70235207
-## rtc_exercise_groupsPreparation                            0.81396162
-## rtc_exercise_groupsAction                                 0.27567812
-## rtc_exercise_groupsMaintain                               0.87687116
-## Age                                                       0.30935821
-## GenderMale                                                0.14571599
-## BMI                                                       0.86484629
-## `Start weight`                                            0.60192011
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.26051048
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.36255268
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.56302981
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.13042928
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.75092497
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.57833341
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.39534169</code></pre>
+## [1] &quot; &quot;</code></pre>
 </div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<p>I have a few thoughts on these data</p>
 </div>
 
 
