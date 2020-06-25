@@ -477,7 +477,7 @@ knitr::kable(
 
 ```
 
-## Interactions in readiness to change
+# Interactions in readiness to change
 
 ```{r interactions}
 
@@ -509,7 +509,7 @@ knitr::kable(as.data.frame(cross.both$observed) %>% tidyr::spread(key = Var2, va
 
 # Predictive models
 
-Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following terms were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. No interactions were included in either model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
+Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
 
 ## Logistic models for categorical outcomes
 
@@ -579,3 +579,7 @@ continuous_list
 
 
 
+
+# Conclusions
+
+I have a few thoughts on these data
