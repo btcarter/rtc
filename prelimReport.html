@@ -1596,201 +1596,6 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(gmodels)
-# paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
-data.dir.path &lt;- file.path(
-  &quot;V:&quot;,
-  &quot;Depts&quot;, 
-  &quot;CtrTransRsch&quot;, 
-  &quot;Dept Private&quot;, 
-  &quot;CTR Staff&quot;, 
-  &quot;PROJECT - Readiness to change manuscript&quot;, 
-  &quot;DATA&quot;
-  )</code></pre>
-<pre class="r"><code>df &lt;- readxl::read_xlsx(
-  file.path(data.dir.path, &quot;Nick_Rural16_OAT 6-11-20.xlsx&quot;)
-  )</code></pre>
-<pre class="r"><code>df.processed &lt;- df %&gt;% 
-  mutate(
-    Gender = ifelse(
-      Gender == 1,
-      &quot;Female&quot;,
-      &quot;Male&quot;
-      ),
-    rtc_diet = ifelse(
-      `1a_pre` == 1,
-      &quot;precontemplative&quot;,
-      ifelse(
-        `1a_pre` == 2,
-        &quot;contemplative&quot;,
-        ifelse(
-          `1a_pre` == 3,
-          &quot;preparation&quot;,
-          ifelse(
-            `1a_pre` == 4,
-            &quot;action&quot;,
-            ifelse(
-              `1a_pre` == 5,
-              &quot;maintain&quot;,
-              `1a_pre`
-            )
-          )
-        )
-      )
-    ),
-    rtc_exercise = ifelse(
-      `2a_pre` == 1,
-      &quot;precontemplative&quot;,
-      ifelse(
-        `2a_pre` == 2,
-        &quot;contemplative&quot;,
-        ifelse(
-          `2a_pre` == 3,
-          &quot;preparation&quot;,
-          ifelse(
-            `2a_pre` == 4,
-            &quot;action&quot;,
-            ifelse(
-              `2a_pre` == 5,
-              &quot;maintain&quot;,
-              `2a_pre`
-            )
-          )
-        )
-      )
-    ),
-    rtc_diet_groups = ifelse(
-      `1a_pre` == 1,
-      &quot;Pre/Contemplative&quot;,
-      ifelse(
-        `1a_pre` == 2,
-        &quot;Pre/Contemplative&quot;,
-        ifelse(
-          `1a_pre` == 3,
-          &quot;Preparation&quot;,
-          ifelse(
-            `1a_pre` == 4,
-            &quot;Action&quot;,
-            ifelse(
-              `1a_pre` == 5,
-              &quot;Maintain&quot;,
-              `1a_pre`
-            )
-          )
-        )
-      )
-    ),
-    rtc_exercise_groups = ifelse(
-    `2a_pre` == 1,
-    &quot;Pre/Contemplative&quot;,
-    ifelse(
-      `2a_pre` == 2,
-      &quot;Pre/Contemplative&quot;,
-      ifelse(
-        `2a_pre` == 3,
-        &quot;Preparation&quot;,
-        ifelse(
-          `2a_pre` == 4,
-          &quot;Action&quot;,
-          ifelse(
-            `2a_pre` == 5,
-            &quot;Maintain&quot;,
-            `2a_pre`
-          )
-        )
-      )
-    )
-  ),
-  Include = ifelse(
-    is.na(`1a_pre`) |
-      is.na(`2a_pre`),
-    &quot;FALSE&quot;,
-    &quot;TRUE&quot;
-  ),
-  MaxWeightLost = MaxWeightLost*-1
-) %&gt;% 
-  select(
-    rtc_diet,
-    rtc_diet_groups,
-    rtc_exercise,
-    rtc_exercise_groups,
-    Include,
-    Gender,
-    Age,
-    `Start weight` = Todays_Weight,
-    BMI,
-    `Maximum weight lost` = MaxWeightLost,
-    `Percent weight lost` = pWeightLost,
-    `Lost 7 percent during core` = Met7GoalCore,
-    `Lost 7 percent overall` = Met7GoalOVL,
-    `Lost 5 percent during core` = Met5GoalCore,
-    `Lost 5 percent overall` = Met5GoalOVL,
-    `Core attendance` = Core,
-    `Post-core attendance` = AfterCore,
-    `Overall attendance` = `Number of Sessions`,
-    `Met fat goal` = FatGramGoalMet,
-    `Met fat goal (percentage of sessions)` = Met_Fat_Gram,
-    `Met exercise goal at least 50 percent` = Exercise_Goal_50_Met,
-    `Met exercise goal (percentage of sessions)` = Met_Activity_Goal
-  ) %&gt;% 
-  mutate(
-    rtc_diet_groups = as.factor(
-      rtc_diet_groups
-      ),
-    rtc_exercise_groups = as.factor(
-      rtc_exercise_groups
-      ),
-    `Lost 7 percent during core` = ifelse(
-      `Lost 7 percent during core` == 1,
-      TRUE,
-      FALSE
-      ),
-    `Lost 7 percent overall` = ifelse(
-      `Lost 7 percent overall` == 1,
-      TRUE,
-      FALSE
-      ),
-    `Lost 5 percent during core` = ifelse(
-      `Lost 5 percent during core` == 1,
-      TRUE,
-      FALSE
-    ),
-    `Lost 5 percent overall` = ifelse(
-      `Lost 5 percent overall` == 1,
-      TRUE,
-      FALSE
-    ),
-    `Met fat goal` = ifelse(
-      `Met fat goal` == 1,
-      TRUE,
-      FALSE
-    ),
-    `Met exercise goal at least 50 percent` = ifelse(
-      `Met exercise goal at least 50 percent` == 1,
-      TRUE,
-      FALSE
-    )
-  )
-
-df.processed$rtc_diet_groups &lt;- factor(
-  df.processed$rtc_diet_groups,
-  levels = c(&quot;Pre/Contemplative&quot;, &quot;Preparation&quot;, &quot;Action&quot;, &quot;Maintain&quot;)
-  )
-
-df.processed$rtc_exercise_groups &lt;- factor(
-  df.processed$rtc_exercise_groups,
-  levels = c(&quot;Pre/Contemplative&quot;, &quot;Preparation&quot;, &quot;Action&quot;, &quot;Maintain&quot;)
-  )</code></pre>
 <div id="descriptives" class="section level1">
 <h1>Descriptives</h1>
 <div id="comparison-between-includedexcluded-individuals" class="section level2">
@@ -1801,7 +1606,8 @@ df.processed$rtc_exercise_groups &lt;- factor(
   )
 
 compareGroups::createTable(
-  tab1
+  tab1,
+  show.p.overall = FALSE
   ) %&gt;% 
   compareGroups::export2md()</code></pre>
 <table class="table table-striped table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -1818,9 +1624,6 @@ FALSE
 <th style="text-align:center;">
 TRUE
 </th>
-<th style="text-align:center;">
-p.overall
-</th>
 </tr>
 </thead>
 <tbody>
@@ -1833,8 +1636,6 @@ N=20
 <td style="text-align:center;font-style: italic;border-bottom: 1px solid grey">
 N=171
 </td>
-<td style="text-align:center;font-style: italic;border-bottom: 1px solid grey">
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1843,9 +1644,6 @@ Gender:
 <td style="text-align:center;">
 </td>
 <td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.072
 </td>
 </tr>
 <tr>
@@ -1858,8 +1656,6 @@ Female
 <td style="text-align:center;">
 153 (89.5%)
 </td>
-<td style="text-align:center;">
-</td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
@@ -1870,8 +1666,6 @@ Male
 </td>
 <td style="text-align:center;">
 18 (10.5%)
-</td>
-<td style="text-align:center;">
 </td>
 </tr>
 <tr>
@@ -1884,9 +1678,6 @@ Age
 <td style="text-align:center;">
 55.4 (12.0)
 </td>
-<td style="text-align:center;">
-0.886
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1897,9 +1688,6 @@ Start weight
 </td>
 <td style="text-align:center;">
 226 (49.4)
-</td>
-<td style="text-align:center;">
-0.124
 </td>
 </tr>
 <tr>
@@ -1912,9 +1700,6 @@ BMI
 <td style="text-align:center;">
 37.5 (7.62)
 </td>
-<td style="text-align:center;">
-0.553
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1925,9 +1710,6 @@ Maximum weight lost
 </td>
 <td style="text-align:center;">
 13.9 (12.5)
-</td>
-<td style="text-align:center;">
-0.012
 </td>
 </tr>
 <tr>
@@ -1940,9 +1722,6 @@ Percent weight lost
 <td style="text-align:center;">
 0.06 (0.05)
 </td>
-<td style="text-align:center;">
-0.027
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1953,9 +1732,6 @@ Lost 7 percent during core
 </td>
 <td style="text-align:center;">
 0.33 (0.47)
-</td>
-<td style="text-align:center;">
-0.058
 </td>
 </tr>
 <tr>
@@ -1968,9 +1744,6 @@ Lost 7 percent overall
 <td style="text-align:center;">
 0.36 (0.48)
 </td>
-<td style="text-align:center;">
-0.323
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1981,9 +1754,6 @@ Lost 5 percent during core
 </td>
 <td style="text-align:center;">
 0.47 (0.50)
-</td>
-<td style="text-align:center;">
-0.051
 </td>
 </tr>
 <tr>
@@ -1996,9 +1766,6 @@ Lost 5 percent overall
 <td style="text-align:center;">
 0.48 (0.50)
 </td>
-<td style="text-align:center;">
-0.275
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2009,9 +1776,6 @@ Core attendance
 </td>
 <td style="text-align:center;">
 11.0 (4.56)
-</td>
-<td style="text-align:center;">
-0.097
 </td>
 </tr>
 <tr>
@@ -2024,9 +1788,6 @@ Post-core attendance
 <td style="text-align:center;">
 1.47 (1.84)
 </td>
-<td style="text-align:center;">
-0.171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2037,9 +1798,6 @@ Overall attendance
 </td>
 <td style="text-align:center;">
 12.5 (5.83)
-</td>
-<td style="text-align:center;">
-0.089
 </td>
 </tr>
 <tr>
@@ -2052,9 +1810,6 @@ Met fat goal
 <td style="text-align:center;">
 0.65 (0.48)
 </td>
-<td style="text-align:center;">
-0.417
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2065,9 +1820,6 @@ Met fat goal (percentage of sessions)
 </td>
 <td style="text-align:center;">
 0.61 (0.38)
-</td>
-<td style="text-align:center;">
-0.253
 </td>
 </tr>
 <tr>
@@ -2080,9 +1832,6 @@ Met exercise goal at least 50 percent
 <td style="text-align:center;">
 0.57 (0.50)
 </td>
-<td style="text-align:center;">
-0.022
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2093,9 +1842,6 @@ Met exercise goal (percentage of sessions)
 </td>
 <td style="text-align:center;">
 0.50 (0.39)
-</td>
-<td style="text-align:center;">
-0.027
 </td>
 </tr>
 </tbody>
@@ -2114,7 +1860,8 @@ tab1 &lt;- compareGroups::compareGroups(
   )
 
 compareGroups::createTable(
-  tab1
+  tab1,
+  show.n = FALSE
   ) %&gt;% 
   compareGroups::export2md()</code></pre>
 <table class="table table-striped table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -2128,9 +1875,6 @@ Summary descriptives table
 <th style="text-align:center;">
 [ALL]
 </th>
-<th style="text-align:center;">
-N
-</th>
 </tr>
 </thead>
 <tbody>
@@ -2140,17 +1884,12 @@ N
 <td style="text-align:center;font-style: italic;border-bottom: 1px solid grey">
 N=171
 </td>
-<td style="text-align:center;font-style: italic;border-bottom: 1px solid grey">
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
 Gender:
 </td>
 <td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2160,8 +1899,6 @@ Female
 <td style="text-align:center;">
 153 (89.5%)
 </td>
-<td style="text-align:center;">
-</td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
@@ -2169,8 +1906,6 @@ Male
 </td>
 <td style="text-align:center;">
 18 (10.5%)
-</td>
-<td style="text-align:center;">
 </td>
 </tr>
 <tr>
@@ -2180,9 +1915,6 @@ Age
 <td style="text-align:center;">
 55.4 (12.0)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2190,9 +1922,6 @@ Start weight
 </td>
 <td style="text-align:center;">
 226 (49.4)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2202,9 +1931,6 @@ BMI
 <td style="text-align:center;">
 37.5 (7.62)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2212,9 +1938,6 @@ Maximum weight lost
 </td>
 <td style="text-align:center;">
 13.9 (12.5)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2224,9 +1947,6 @@ Percent weight lost
 <td style="text-align:center;">
 0.06 (0.05)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2234,9 +1954,6 @@ Lost 7 percent during core
 </td>
 <td style="text-align:center;">
 0.33 (0.47)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2246,9 +1963,6 @@ Lost 7 percent overall
 <td style="text-align:center;">
 0.36 (0.48)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2256,9 +1970,6 @@ Lost 5 percent during core
 </td>
 <td style="text-align:center;">
 0.47 (0.50)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2268,9 +1979,6 @@ Lost 5 percent overall
 <td style="text-align:center;">
 0.48 (0.50)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2278,9 +1986,6 @@ Core attendance
 </td>
 <td style="text-align:center;">
 11.0 (4.56)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2290,9 +1995,6 @@ Post-core attendance
 <td style="text-align:center;">
 1.47 (1.84)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2300,9 +2002,6 @@ Overall attendance
 </td>
 <td style="text-align:center;">
 12.5 (5.83)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2312,9 +2011,6 @@ Met fat goal
 <td style="text-align:center;">
 0.65 (0.48)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2322,9 +2018,6 @@ Met fat goal (percentage of sessions)
 </td>
 <td style="text-align:center;">
 0.61 (0.38)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 <tr>
@@ -2334,9 +2027,6 @@ Met exercise goal at least 50 percent
 <td style="text-align:center;">
 0.57 (0.50)
 </td>
-<td style="text-align:center;">
-171
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -2344,9 +2034,6 @@ Met exercise goal (percentage of sessions)
 </td>
 <td style="text-align:center;">
 0.50 (0.39)
-</td>
-<td style="text-align:center;">
-171
 </td>
 </tr>
 </tbody>

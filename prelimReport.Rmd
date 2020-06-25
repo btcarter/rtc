@@ -15,7 +15,7 @@ output:
     incremental: yes
 ---
 
-```{r setup}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(dplyr)
 library(gmodels)
@@ -31,7 +31,7 @@ data.dir.path <- file.path(
   )
 ```
 
-```{r loadData}
+```{r loadData, include=FALSE}
 df <- readxl::read_xlsx(
   file.path(data.dir.path, "Nick_Rural16_OAT 6-11-20.xlsx")
   )
@@ -39,7 +39,7 @@ df <- readxl::read_xlsx(
 ```
 
 
-```{r selection}
+```{r selection, include=FALSE}
 df.processed <- df %>% 
   mutate(
     Gender = ifelse(
@@ -226,7 +226,8 @@ tab1 <- compareGroups::compareGroups(
   )
 
 compareGroups::createTable(
-  tab1
+  tab1,
+  show.p.overall = FALSE
   ) %>% 
   compareGroups::export2md()
 
@@ -246,7 +247,8 @@ tab1 <- compareGroups::compareGroups(
   )
 
 compareGroups::createTable(
-  tab1
+  tab1,
+  show.n = FALSE
   ) %>% 
   compareGroups::export2md()
 ```
