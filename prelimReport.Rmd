@@ -256,6 +256,8 @@ compareGroups::createTable(
 
 # Comparison of categorical variables by readiness to change
 
+Categorical variables (i.e. variables that were nominal rather than quantitative in nature) we examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
+
 ## Readiness to change diet
 
 ```{r categoricals, message=FALSE,warning=FALSE,echo=FALSE}
@@ -280,10 +282,36 @@ chi_diet <- function(x){
 
 chis.diet <- lapply(binary_vars, chi_diet)
 
+df.stats <- data.frame(
+  "Variable"=character(),
+  "X-squared"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
 for (i in names(chis.diet)){
-  print(i)
-  print(chis.diet[[i]])
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "X-squared" = chis.diet[[i]]$statistic,
+    "df" = chis.diet[[i]]$parameter,
+    "p-value" = chis.diet[[i]]$p.value,
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
 }
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
@@ -302,25 +330,58 @@ chi_exercise <- function(x){
 
 chis.exercise <- lapply(binary_vars, chi_exercise)
 
+df.stats <- data.frame(
+  "Variable"=character(),
+  "X-squared"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
 for (i in names(chis.exercise)){
-  print(i)
-  print(chis.exercise[[i]])
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "X-squared" = chis.exercise[[i]]$statistic,
+    "df" = chis.exercise[[i]]$parameter,
+    "p-value" = chis.exercise[[i]]$p.value,
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
 }
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
 # Comparison of continuous variables by readiness to change
+
+The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
 ## Readiness to change diet
 
 ```{r continuous}
 
 cont_vars <- list(
-  "Core attendance" = "Core attendance",
-  "Post-core attendance" = "Post-core attendance",
-  "Overall attendance" = "Overall attendance",
-  "Maximum weight lost" = "Maximum weight lost",
-  "Percent weight lost" = "Percent weight lost",
+  "Core attendance" = 
+    "Core attendance",
+  "Post-core attendance" = 
+    "Post-core attendance",
+  "Overall attendance" = 
+    "Overall attendance",
+  "Maximum weight lost" = 
+    "Maximum weight lost",
+  "Percent weight lost" = 
+    "Percent weight lost",
   "Met fat goal (percentage of sessions)" = 
     "Met fat goal (percentage of sessions)",
   "Met exercise goal (percentage of sessions)" = 
@@ -340,6 +401,38 @@ aov_diet <- lapply(cont_vars, aov_readiness, y = "rtc_diet_groups")
 
 lapply(aov_diet, summary)
 
+df.stats <- data.frame(
+  "Variable"=character(),
+  "F-statistic"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
+for (i in names(aov_diet)){
+  a <- summary(aov_diet[[i]])
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "F-statistic" = a[[1]]$`F value`[1],
+    "df" = a[[1]]$`Df`[1],
+    "p-value" = a[[1]]$`Pr(>F)`[1],
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
 ```
 
 ## Readiness to change exercise
@@ -349,6 +442,38 @@ lapply(aov_diet, summary)
 aov_exercise <- lapply(cont_vars, aov_readiness, y = "rtc_exercise_groups")
 
 lapply(aov_exercise, summary)
+
+df.stats <- data.frame(
+  "Variable"=character(),
+  "F-statistic"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
+for (i in names(aov_exercise)){
+  a <- summary(aov_exercise[[i]])
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "F-statistic" = a[[1]]$`F value`[1],
+    "df" = a[[1]]$`Df`[1],
+    "p-value" = a[[1]]$`Pr(>F)`[1],
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
