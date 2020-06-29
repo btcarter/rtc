@@ -8,17 +8,18 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: yes
+  slidy_presentation:
+    incremental: yes
   ioslides_presentation:
     incremental: yes
     widescreen: true
-  slidy_presentation:
-    incremental: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(dplyr)
 library(gmodels)
+library(ggplot2)
 # paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
 data.dir.path <- file.path(
   "V:",
@@ -256,7 +257,7 @@ compareGroups::createTable(
 
 # Comparison of categorical variables by readiness to change
 
-Categorical variables (i.e. variables that were nominal rather than quantitative in nature) we examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
+Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
 ## Readiness to change diet
 
@@ -369,7 +370,7 @@ The effect of readiness to change on quantitative measures were examined using v
 
 ## Readiness to change diet
 
-```{r continuous}
+```{r continuous, message=FALSE}
 
 cont_vars <- list(
   "Core attendance" = 
@@ -399,7 +400,7 @@ aov_readiness <- function(x, y){
 
 aov_diet <- lapply(cont_vars, aov_readiness, y = "rtc_diet_groups")
 
-lapply(aov_diet, summary)
+#lapply(aov_diet, summary)
 
 df.stats <- data.frame(
   "Variable"=character(),
@@ -441,7 +442,7 @@ knitr::kable(
 
 aov_exercise <- lapply(cont_vars, aov_readiness, y = "rtc_exercise_groups")
 
-lapply(aov_exercise, summary)
+# lapply(aov_exercise, summary)
 
 df.stats <- data.frame(
   "Variable"=character(),
@@ -504,10 +505,19 @@ CV <- cv.test(
 Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This interaction is incorporated into the predictive models.
 
 ```{r}
-knitr::kable(as.data.frame(cross.both$observed) %>% tidyr::spread(key = Var2, value = Freq))
+knitr::kable(
+  as.data.frame(cross.both$observed) %>% tidyr::spread(key = Var2, value = Freq)) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
 ```
 
-# Predictive models
+# Predictive models for success
 
 Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
 
@@ -554,10 +564,9 @@ for (i in names(binary_list)){
   )
   
   if (sig.p == TRUE) {
-    print(" ")
+    print("==============================================")
     print(i)
-    print(binary_list[[i]])
-    print(" ")
+    print(binary_list[[i]][c(1,4)])
   }  
 }
 
@@ -606,10 +615,9 @@ for (i in names(continuous_list)){
   )
   
   if (sig.p == TRUE) {
-    print(" ")
+    print("===============================================")
     print(i)
     print(continuous_list[[i]])
-    print(" ")
   }  
 }
 
@@ -618,6 +626,218 @@ for (i in names(continuous_list)){
 
 
 
-# Conclusions
+# Core Completers
 
-I have a few thoughts on these data
+Did completing the 16 core sessions predict anything?
+
+```{r}
+df.processed <- df.processed %>% 
+  mutate(
+    core_completion = ifelse(
+      `Core attendance` >= 16,
+      "Complete",
+      "Incomplete"
+    )
+  )
+
+comp_tab <- compareGroups::compareGroups(core_completion ~ .- rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet - Include - `Core attendance`,
+                             data = df.processed)
+
+compareGroups::createTable(
+  comp_tab,
+  show.p.overall = FALSE
+) %>% 
+  compareGroups::export2md(
+    caption = "A comparison of participants according to whether they completed the 16 core sessions."
+    )
+
+```
+
+## Categorical variables
+
+Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to whether they completed the 16 core sessions using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
+
+```{r}
+binary_vars <- list(
+  "Lost 7 percent during core" = "Lost 7 percent during core",
+  "Lost 7 percent overall" = "Lost 7 percent overall",
+  "Lost 5 percent during core" = "Lost 5 percent during core",
+  "Lost 5 percent overall" = "Lost 5 percent overall",
+  "Met fat goal" = "Met fat goal",
+  "Met exercise goal at least 50 percent" = "Met exercise goal at least 50 percent"
+  )
+
+chi_diet <- function(x){
+  chisq <- chisq.test(
+    df.processed$core_completion,
+    df.processed[[x]],
+    correct = TRUE
+  )
+  return(chisq)
+}
+
+chis.diet <- lapply(binary_vars, chi_diet)
+
+df.stats <- data.frame(
+  "Variable"=character(),
+  "X-squared"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
+for (i in names(chis.diet)){
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "X-squared" = chis.diet[[i]]$statistic,
+    "df" = chis.diet[[i]]$parameter,
+    "p-value" = chis.diet[[i]]$p.value,
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+# graphs
+
+df.processed %>% 
+  tidyr::gather(
+    key = Variables,
+    value = Value,
+    c(
+      "Lost 7 percent during core",
+      "Lost 7 percent overall",
+      "Lost 5 percent during core",
+      "Lost 5 percent overall",
+      "Met fat goal",
+      "Met exercise goal at least 50 percent"
+      )
+  ) %>% 
+  group_by(
+    core_completion,
+    Variables,
+    Value
+  ) %>% 
+  summarise(
+    n = n()
+  ) %>% 
+  ggplot(
+    aes(core_completion, Value)
+  ) +
+  geom_point(
+    aes(size = n)
+  ) +
+  facet_wrap("Variables")
+
+
+```
+
+## Continuous variables
+
+The effect of completing the core sessions on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
+
+```{r}
+
+cont_vars <- list(
+  "Post-core attendance" = 
+    "Post-core attendance",
+  "Overall attendance" = 
+    "Overall attendance",
+  "Maximum weight lost" = 
+    "Maximum weight lost",
+  "Percent weight lost" = 
+    "Percent weight lost",
+  "Met fat goal (percentage of sessions)" = 
+    "Met fat goal (percentage of sessions)",
+  "Met exercise goal (percentage of sessions)" = 
+    "Met exercise goal (percentage of sessions)"
+)
+
+aov_readiness <- function(x, y){
+  aov.results <- aov(
+    df.processed[[x]] ~ df.processed[[y]],
+    data = df.processed
+      )
+  
+  return(aov.results)
+}
+
+aov_diet <- lapply(cont_vars, aov_readiness, y = "rtc_diet_groups")
+
+# lapply(aov_diet, summary)
+
+df.stats <- data.frame(
+  "Variable"=character(),
+  "F-statistic"=numeric(),
+  "df"=integer(),
+  "p-value"=integer(),
+  row.names = NULL
+)
+
+for (i in names(aov_diet)){
+  a <- summary(aov_diet[[i]])
+  row.to.add <- data.frame(
+    "Variable" = i,
+    "F-statistic" = a[[1]]$`F value`[1],
+    "df" = a[[1]]$`Df`[1],
+    "p-value" = a[[1]]$`Pr(>F)`[1],
+    row.names = NULL
+    )
+  df.stats <- rbind(df.stats, row.to.add)
+}
+
+knitr::kable(
+  df.stats,
+  output = "pandoc"
+) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+df.processed %>% 
+  tidyr::gather(
+    key = Variables,
+    value = Value,
+    c(
+      "Post-core attendance",
+      "Overall attendance",
+      "Maximum weight lost",
+      "Percent weight lost",
+      "Met fat goal (percentage of sessions)",
+      "Met exercise goal (percentage of sessions)"
+      )
+  ) %>% 
+  ggplot(
+    aes(core_completion, Value)
+  ) +
+  geom_boxplot() +
+  facet_wrap(
+    "Variables",
+    scales = "free"
+    ) +
+  theme_classic() +
+  labs(
+    title = "Continuous Outcomes for Completers v. Non-Completers",
+    x = "Group",
+    y = ""
+  )
+
+```
+
+
+
