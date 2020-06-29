@@ -530,12 +530,8 @@ model_log <- function(x){
   model <- glm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups * 
-      rtc_exercise_groups + 
-      Age +
-      Gender +
-      BMI +
-      `Start weight`, 
+      rtc_diet_groups + 
+      rtc_exercise_groups, 
     data = df.processed, 
     family = binomial
     ) %>% 
@@ -581,12 +577,8 @@ model_lm <- function(x){
   model <- lm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups * 
-      rtc_exercise_groups + 
-      Age +
-      Gender +
-      BMI +
-      `Start weight`, 
+      rtc_diet_groups + 
+      rtc_exercise_groups, 
     data = df.processed
     ) %>% 
     summary()
@@ -724,21 +716,22 @@ df.processed %>%
       "Met exercise goal at least 50 percent"
       )
   ) %>% 
-  group_by(
-    core_completion,
-    Variables,
-    Value
-  ) %>% 
-  summarise(
-    n = n()
-  ) %>% 
   ggplot(
-    aes(core_completion, Value)
+    aes(core_completion)
   ) +
-  geom_point(
-    aes(size = n)
+  geom_bar(
+    aes(fill = Value),
+    position = "fill",
+    alpha = 0.8
   ) +
-  facet_wrap("Variables")
+  facet_wrap("Variables") +
+  theme_classic() +
+  labs(
+    title = "Proportion of Patients Achieving Program Goals",
+    x = "Core Completion Status",
+    y = "Proportion",
+    fill = "Did They Meet Goal?"
+  )
 
 
 ```
@@ -839,5 +832,12 @@ df.processed %>%
 
 ```
 
+```{r}
+ggplot(
+  df.processed,
+  aes(Age)
+) +
+  geom_boxplot()
+```
 
 
