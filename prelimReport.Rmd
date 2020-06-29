@@ -478,7 +478,7 @@ knitr::kable(
 
 ```
 
-# Interactions in readiness to change
+# Potential interaction in readiness to change
 
 ```{r interactions}
 
@@ -499,10 +499,9 @@ CV <- cv.test(
   df.processed$rtc_exercise_groups
   )
 
-# fmla <-  as.formula("df.processed$`Maximum weight lost` ~ df.processed$rtc_diet_groups*df.processed$rtc_exercise_groups, df.processed")
 ```
 
-Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This interaction is incorporated into the predictive models.
+Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a large association between readiness to change diet and readiness to change exercise. This association is incorporated into the predictive models as an interaction.
 
 ```{r}
 knitr::kable(
@@ -620,9 +619,6 @@ for (i in names(continuous_list)){
 }
 
 ```
-
-
-
 
 # Core Completers
 
@@ -837,6 +833,9 @@ df.processed %>%
   )
 
 ```
+
+
+
 
 
 
