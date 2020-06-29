@@ -530,8 +530,11 @@ model_log <- function(x){
   model <- glm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups, 
+      rtc_diet_groups * 
+      rtc_exercise_groups +
+      Age + 
+      Gender +
+      BMI, 
     data = df.processed, 
     family = binomial
     ) %>% 
@@ -577,8 +580,11 @@ model_lm <- function(x){
   model <- lm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups, 
+      rtc_diet_groups * 
+      rtc_exercise_groups +
+      Age + 
+      Gender +
+      BMI, 
     data = df.processed
     ) %>% 
     summary()
@@ -832,12 +838,6 @@ df.processed %>%
 
 ```
 
-```{r}
-ggplot(
-  df.processed,
-  aes(Age)
-) +
-  geom_boxplot()
-```
+
 
 
