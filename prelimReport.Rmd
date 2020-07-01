@@ -501,7 +501,7 @@ CV <- cv.test(
 
 ```
 
-Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a large association between readiness to change diet and readiness to change exercise. This association is incorporated into the predictive models as an interaction.
+Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a relatively large association between readiness to change diet and readiness to change exercise. This association is incorporated into the final predictive models as an interaction.
 
 ```{r}
 knitr::kable(
