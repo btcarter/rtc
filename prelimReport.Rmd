@@ -6,7 +6,6 @@ output:
   html_document:
     code_folding: hide
     toc: yes
-    toc_depth: 3
     toc_float: yes
   slidy_presentation:
     incremental: yes
@@ -518,11 +517,15 @@ knitr::kable(
 
 ## Predictive models for success
 
-Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
+Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. Two general models were used to predict success in the program - a simple model incorporating only the answers on the readiness to change survey and a complex model incorporating both an interaction between the answers on the survey and the effects of age, gender, and BMI. These models were employed in a logistic fashion when predicting nominal outcomes (e.g. did they lose 7% of their body weight during the program) and in a linear model when predicting a continuous outcome (e.g. how much of their body weight did they lose during the program).
+
+These predictive models were evaluated for each of the outcome measures. The results are organized by model type (logistic or linear, simple or complex) and outcome variable predicted by the model. $\beta$ estimates and *p*-values are presented in tables. Logistic model performance is quantified using *Akaike information criteria* (AIC). Linear model performance is quantified using an adjusted-R$^2$.
+
+This is followed by a discussion summarizing the results.
 
 ### Logistic model
 
-#### Simple Model
+#### Simple
 
 This model is called the simple model because it assumes no interactions and only examines the effect of response to the readiness to change survey on the outcome variables without considering interactions between the survey responses or the effect of other factors such as age.
 
@@ -666,7 +669,7 @@ knitr::kable(
 ) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-#### Complex Model
+#### Complex
 
 The complex model examines the effect of readiness to change and also includes an interaction between responses on the readiness to change survey, as well as potential effects of age, gender and BMI.
 
@@ -816,7 +819,7 @@ knitr::kable(
 
 ### Linear Model
 
-#### Simple Model
+#### Simple
 
 ```{r}
 
@@ -826,17 +829,369 @@ model_lm <- function(x){
     formula = 
       df.processed[[x]] ~ 
       rtc_diet_groups + 
+      rtc_exercise_groups, 
+    data = df.processed
+    )
+}
+
+linear_simple <- lapply(cont_vars, model_lm)
+
+```
+
+##### Core attendance
+
+```{r}
+a <- "Core attendance"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Post-core attendance
+
+
+```{r}
+a <- "Post-core attendance"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Overall attendance
+
+```{r}
+a <- "Overall attendance"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Maximum weight lost
+
+```{r}
+a <- "Maximum weight lost"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Percent weight lost
+
+```{r}
+a <- "Percent weight lost"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met fat goal (percentage of sessions)
+
+```{r}
+a <- "Met fat goal (percentage of sessions)"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met exercise goal (percentage of sessions)
+
+```{r}
+a <- "Met exercise goal (percentage of sessions)"
+r <- summary(linear_simple[[a]])$adj.r.squared
+b <- summary(linear_simple[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+#### Complex
+
+```{r}
+
+model_lm <- function(x){
+  
+  model <- lm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups * 
       rtc_exercise_groups +
-      Age + 
+      Age +
       Gender +
       BMI, 
     data = df.processed
     )
 }
 
-continuous_list <- lapply(cont_vars, model_lm)
+linear_complex <- lapply(cont_vars, model_lm)
 
 ```
+
+##### Core attendance
+
+```{r}
+a <- "Core attendance"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Post-core attendance
+
+
+```{r}
+a <- "Post-core attendance"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Overall attendance
+
+```{r}
+a <- "Overall attendance"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Maximum weight lost
+
+```{r}
+a <- "Maximum weight lost"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Percent weight lost
+
+```{r}
+a <- "Percent weight lost"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met fat goal (percentage of sessions)
+
+```{r}
+a <- "Met fat goal (percentage of sessions)"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met exercise goal (percentage of sessions)
+
+```{r}
+a <- "Met exercise goal (percentage of sessions)"
+r <- summary(linear_complex[[a]])$adj.r.squared
+b <- summary(linear_complex[[a]])$coefficients
+```
+
+R$^2$: `r r`
+
+```{r}
+knitr::kable(
+  b
+) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+
+### Predictive Model Summary
+
+Overall, the models performed very poorly. The best logistic model had an AIC of `r log_simple[["Lost 7 percent during core"]]$aic` to predict whether an individual lost 7 percent of their body weight during the core sessions. This is quite high, ideally 
+
+```{r}
+# assemble dataframe with outcome variables and model results
+
+performance <- data.frame(
+  "Outcome" = character(),
+  "Complexity" = character(),
+  "AIC" = numeric()
+)
+
+for (var in binary_vars){
+  
+  aic <- log_simple[[var]]$aic
+  
+  performance <- rbind(
+    performance,
+    data.frame(
+      "Outcome" = var,
+      "Complexity" = "Simple",
+      "AIC" = aic
+    )
+  )
+  
+  aic <- log_complex[[var]]$aic
+  
+  performance <- rbind(
+    performance,
+    data.frame(
+      "Outcome" = var,
+      "Complexity" = "Complex",
+      "AIC" = aic
+    )
+  )
+}
+
+knitr::kable(
+  performance,
+  caption = "Logistic model performance when predicting outcome variables."
+) %>% 
+  kableExtra::collapse_rows(
+    columns = 1, valign = "top"
+  ) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+# linear model performance summary
+
+performance <- data.frame(
+  "Outcome" = character(),
+  "Complexity" = character(),
+  "R-squared" = numeric()
+)
+
+for (var in cont_vars){
+  
+  aic <- summary(linear_simple[[var]])$adj.r.squared
+  
+  performance <- rbind(
+    performance,
+    data.frame(
+      "Outcome" = var,
+      "Complexity" = "Simple",
+      "R-squared" = aic
+    )
+  )
+  
+  aic <- summary(linear_complex[[var]])$adj.r.squared
+  
+  performance <- rbind(
+    performance,
+    data.frame(
+      "Outcome" = var,
+      "Complexity" = "Complex",
+      "R-squared" = aic
+    )
+  )
+}
+
+knitr::kable(
+  performance,
+  caption = "Linear model performance when predicting outcome variables."
+) %>% 
+  kableExtra::collapse_rows(
+    columns = 1, valign = "top"
+  ) %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
 
 # Core Completers
 
