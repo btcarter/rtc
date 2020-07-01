@@ -215,10 +215,10 @@ df.processed$rtc_exercise_groups <- factor(
 
 ```
 
+# Preliminary Analysis
+## Descriptives
 
-# Descriptives
-
-## Comparison between included/excluded individuals
+### Comparison between included/excluded individuals
 
 ```{r message=FALSE, warning=FALSE}
 tab1 <- compareGroups::compareGroups(
@@ -234,7 +234,7 @@ compareGroups::createTable(
 
 ```
 
-## Summary statistics of included participants
+### Summary statistics of included participants
 
 ```{r}
 df.processed <- df.processed %>% 
@@ -255,11 +255,11 @@ compareGroups::createTable(
 ```
 
 
-# Comparison of categorical variables by readiness to change
+## Comparison of categorical variables by readiness to change
 
 Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
-## Readiness to change diet
+### Readiness to change diet
 
 ```{r categoricals, message=FALSE,warning=FALSE,echo=FALSE}
 
@@ -316,7 +316,7 @@ knitr::kable(
 
 ```
 
-## Readiness to change exercise
+### Readiness to change exercise
 
 ```{r}
 
@@ -364,11 +364,11 @@ knitr::kable(
 
 ```
 
-# Comparison of continuous variables by readiness to change
+## Comparison of continuous variables by readiness to change
 
 The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
-## Readiness to change diet
+### Readiness to change diet
 
 ```{r continuous, message=FALSE}
 
@@ -436,7 +436,7 @@ knitr::kable(
 
 ```
 
-## Readiness to change exercise
+### Readiness to change exercise
 
 ```{r continuous2}
 
@@ -478,7 +478,7 @@ knitr::kable(
 
 ```
 
-# Potential interaction in readiness to change
+## Potential interaction in readiness to change
 
 ```{r interactions}
 
@@ -516,11 +516,11 @@ knitr::kable(
 
 ```
 
-# Predictive models for success
+## Predictive models for success
 
 Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
 
-## Logistic models for categorical outcomes
+### Logistic models for categorical outcomes
 
 ```{r}
 
@@ -570,7 +570,7 @@ for (i in names(binary_list)){
 
 ```
 
-## Linear model for continuous outcomes
+### Linear model for continuous outcomes
 
 ```{r}
 
@@ -839,4 +839,122 @@ df.processed %>%
 
 
 
+
+
+# Secondary Analysis - Combining RTC Groups
+
+Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups.
+
+```{r}
+df.processed <- df.processed %>% 
+  mutate(
+    rtc_diet_post_groups = ifelse(
+      rtc_diet == "preparation" | rtc_diet == "contemplative",
+      "preparation",
+        ifelse(
+          rtc_diet == "maintain" | rtc_diet == "action",
+          "action",
+          NA
+        )
+    ),
+    rtc_exercise_post_groups = ifelse(
+      rtc_exercise == "preparation" | rtc_exercise == "contemplative",
+      "preparation",
+        ifelse(
+          rtc_exercise == "maintain" | rtc_exercise == "action",
+          "action",
+          NA
+        )
+    ),
+  )
+
+model_log <- function(x){
+
+  model <- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_post_groups * 
+      rtc_exercise_post_groups +
+      Age + 
+      Gender +
+      BMI, 
+    data = df.processed, 
+    family = binomial
+    ) %>% 
+    summary()
+  
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
+}
+
+binary_list <- lapply(binary_vars, model_log)
+
+for (i in names(binary_list)){
+  
+  b <- binary_list[[i]]$`Pr(>|z|)`
+  
+  sig.p <- ifelse(
+    0.05 >=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print("==============================================")
+    print(i)
+    print(binary_list[[i]][c(1,4)])
+  }  
+}
+
+model_lm <- function(x){
+  
+  model <- lm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_post_groups * 
+      rtc_exercise_post_groups +
+      Age + 
+      Gender +
+      BMI, 
+    data = df.processed
+    ) %>% 
+    summary()
+  
+  a <- data.frame(
+        "Beta estimate" = model$coefficients[,1],
+        "p-value" = model$coefficients[,4]
+        )
+  
+  return(a)
+}
+
+continuous_list <- lapply(cont_vars, model_lm)
+
+for (i in names(continuous_list)){
+  
+  b <- continuous_list[[i]]$p.value
+  
+  sig.p <- ifelse(
+    0.05 >=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print("===============================================")
+    print(i)
+    print(continuous_list[[i]])
+  }  
+}
+
+```
 
