@@ -1596,10 +1596,12 @@ div.tocify {
 </div>
 
 
-<div id="descriptives" class="section level1">
-<h1>Descriptives</h1>
-<div id="comparison-between-includedexcluded-individuals" class="section level2">
-<h2>Comparison between included/excluded individuals</h2>
+<div id="preliminary-analysis" class="section level1">
+<h1>Preliminary Analysis</h1>
+<div id="descriptives" class="section level2">
+<h2>Descriptives</h2>
+<div id="comparison-between-includedexcluded-individuals" class="section level3">
+<h3>Comparison between included/excluded individuals</h3>
 <pre class="r"><code>tab1 &lt;- compareGroups::compareGroups(
   Include ~ .- rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet,
   df.processed
@@ -1847,8 +1849,8 @@ Met exercise goal (percentage of sessions)
 </tbody>
 </table>
 </div>
-<div id="summary-statistics-of-included-participants" class="section level2">
-<h2>Summary statistics of included participants</h2>
+<div id="summary-statistics-of-included-participants" class="section level3">
+<h3>Summary statistics of included participants</h3>
 <pre class="r"><code>df.processed &lt;- df.processed %&gt;% 
   filter(
     Include == &quot;TRUE&quot;
@@ -2040,11 +2042,11 @@ Met exercise goal (percentage of sessions)
 </table>
 </div>
 </div>
-<div id="comparison-of-categorical-variables-by-readiness-to-change" class="section level1">
-<h1>Comparison of categorical variables by readiness to change</h1>
+<div id="comparison-of-categorical-variables-by-readiness-to-change" class="section level2">
+<h2>Comparison of categorical variables by readiness to change</h2>
 <p>Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson’s chi-square analysis. What follows are the reported <span class="math inline">\(\chi^2\)</span> statistics, degrees of freedom, and p-values from each test.</p>
-<div id="readiness-to-change-diet" class="section level2">
-<h2>Readiness to change diet</h2>
+<div id="readiness-to-change-diet" class="section level3">
+<h3>Readiness to change diet</h3>
 <table class="table table-striped table-hover table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -2150,8 +2152,8 @@ Met exercise goal at least 50 percent
 </tbody>
 </table>
 </div>
-<div id="readiness-to-change-exercise" class="section level2">
-<h2>Readiness to change exercise</h2>
+<div id="readiness-to-change-exercise" class="section level3">
+<h3>Readiness to change exercise</h3>
 <pre class="r"><code>chi_exercise &lt;- function(x){
   chisq &lt;- chisq.test(
     df.processed$rtc_exercise_groups,
@@ -2299,11 +2301,11 @@ Met exercise goal at least 50 percent
 </table>
 </div>
 </div>
-<div id="comparison-of-continuous-variables-by-readiness-to-change" class="section level1">
-<h1>Comparison of continuous variables by readiness to change</h1>
+<div id="comparison-of-continuous-variables-by-readiness-to-change" class="section level2">
+<h2>Comparison of continuous variables by readiness to change</h2>
 <p>The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.</p>
-<div id="readiness-to-change-diet-1" class="section level2">
-<h2>Readiness to change diet</h2>
+<div id="readiness-to-change-diet-1" class="section level3">
+<h3>Readiness to change diet</h3>
 <pre class="r"><code>cont_vars &lt;- list(
   &quot;Core attendance&quot; = 
     &quot;Core attendance&quot;,
@@ -2484,8 +2486,8 @@ Met exercise goal (percentage of sessions)
 </tbody>
 </table>
 </div>
-<div id="readiness-to-change-exercise-1" class="section level2">
-<h2>Readiness to change exercise</h2>
+<div id="readiness-to-change-exercise-1" class="section level3">
+<h3>Readiness to change exercise</h3>
 <pre class="r"><code>aov_exercise &lt;- lapply(cont_vars, aov_readiness, y = &quot;rtc_exercise_groups&quot;)
 
 # lapply(aov_exercise, summary)
@@ -2641,8 +2643,8 @@ Met exercise goal (percentage of sessions)
 </table>
 </div>
 </div>
-<div id="interactions-in-readiness-to-change" class="section level1">
-<h1>Interactions in readiness to change</h1>
+<div id="potential-interaction-in-readiness-to-change" class="section level2">
+<h2>Potential interaction in readiness to change</h2>
 <pre class="r"><code>cross.both &lt;- chisq.test(
   df.processed$rtc_diet_groups,
   df.processed$rtc_exercise_groups,
@@ -2658,10 +2660,8 @@ cv.test = function(x,y) {
 CV &lt;- cv.test(
   df.processed$rtc_diet_groups,
   df.processed$rtc_exercise_groups
-  )
-
-# fmla &lt;-  as.formula(&quot;df.processed$`Maximum weight lost` ~ df.processed$rtc_diet_groups*df.processed$rtc_exercise_groups, df.processed&quot;)</code></pre>
-<p>Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer’s V between both questions is 0.423028. This interaction is incorporated into the predictive models.</p>
+  )</code></pre>
+<p>Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer’s V between both questions is 0.423028. This indicates there is a relatively large association between readiness to change diet and readiness to change exercise. This association is incorporated into the final predictive models as an interaction.</p>
 <pre class="r"><code>knitr::kable(
   as.data.frame(cross.both$observed) %&gt;% tidyr::spread(key = Var2, value = Freq)) %&gt;% 
   kableExtra::kable_styling(
@@ -2763,11 +2763,965 @@ Maintain
 </tbody>
 </table>
 </div>
-<div id="predictive-models-for-success" class="section level1">
-<h1>Predictive models for success</h1>
+<div id="predictive-models-for-success" class="section level2">
+<h2>Predictive models for success</h2>
 <p>Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).</p>
-<div id="logistic-models-for-categorical-outcomes" class="section level2">
-<h2>Logistic models for categorical outcomes</h2>
+<div id="logistic-model" class="section level3">
+<h3>Logistic model</h3>
+<div id="simple-model" class="section level4">
+<h4>Simple Model</h4>
+<p>This model is called the simple model because it assumes no interactions and only examines the effect of response to the readiness to change survey on the outcome variables without considering interactions between the survey responses or the effect of other factors such as age.</p>
+<pre class="r"><code>model_log &lt;- function(x){
+
+  model &lt;- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups, 
+    data = df.processed, 
+    family = binomial
+    )
+  
+  return(
+    model
+    )
+}
+
+log_simple &lt;- lapply(binary_vars, model_log)</code></pre>
+<div id="lost-7-percent-during-core" class="section level5">
+<h5>Lost 7 percent during core</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 7 percent during core&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 216.3045852</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.4163179
+</td>
+<td style="text-align:right;">
+1.215428
+</td>
+<td style="text-align:right;">
+-1.9880393
+</td>
+<td style="text-align:right;">
+0.0468073
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+2.1199365
+</td>
+<td style="text-align:right;">
+1.339522
+</td>
+<td style="text-align:right;">
+1.5826066
+</td>
+<td style="text-align:right;">
+0.1135112
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+2.1187821
+</td>
+<td style="text-align:right;">
+1.392525
+</td>
+<td style="text-align:right;">
+1.5215397
+</td>
+<td style="text-align:right;">
+0.1281245
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+1.0716506
+</td>
+<td style="text-align:right;">
+1.547084
+</td>
+<td style="text-align:right;">
+0.6926905
+</td>
+<td style="text-align:right;">
+0.4885038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.0574087
+</td>
+<td style="text-align:right;">
+1.466368
+</td>
+<td style="text-align:right;">
+0.0391503
+</td>
+<td style="text-align:right;">
+0.9687706
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.6493321
+</td>
+<td style="text-align:right;">
+1.495516
+</td>
+<td style="text-align:right;">
+-0.4341859
+</td>
+<td style="text-align:right;">
+0.6641534
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-0.9389891
+</td>
+<td style="text-align:right;">
+1.540372
+</td>
+<td style="text-align:right;">
+-0.6095859
+</td>
+<td style="text-align:right;">
+0.5421362
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lost-7-percent-overall" class="section level5">
+<h5>Lost 7 percent overall</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 7 percent overall&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 219.0675692</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.4608758
+</td>
+<td style="text-align:right;">
+1.229572
+</td>
+<td style="text-align:right;">
+-2.0014078
+</td>
+<td style="text-align:right;">
+0.0453485
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+2.2580716
+</td>
+<td style="text-align:right;">
+1.318104
+</td>
+<td style="text-align:right;">
+1.7131209
+</td>
+<td style="text-align:right;">
+0.0866903
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+2.0709817
+</td>
+<td style="text-align:right;">
+1.371926
+</td>
+<td style="text-align:right;">
+1.5095431
+</td>
+<td style="text-align:right;">
+0.1311601
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+1.0387901
+</td>
+<td style="text-align:right;">
+1.529410
+</td>
+<td style="text-align:right;">
+0.6792097
+</td>
+<td style="text-align:right;">
+0.4970050
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.1723495
+</td>
+<td style="text-align:right;">
+1.458271
+</td>
+<td style="text-align:right;">
+0.1181876
+</td>
+<td style="text-align:right;">
+0.9059190
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.5409984
+</td>
+<td style="text-align:right;">
+1.485581
+</td>
+<td style="text-align:right;">
+-0.3641663
+</td>
+<td style="text-align:right;">
+0.7157338
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-0.9742629
+</td>
+<td style="text-align:right;">
+1.533376
+</td>
+<td style="text-align:right;">
+-0.6353712
+</td>
+<td style="text-align:right;">
+0.5251864
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lost-5-percent-during-core" class="section level5">
+<h5>Lost 5 percent during core</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 5 percent during core&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 235.4555405</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.0730235
+</td>
+<td style="text-align:right;">
+1.0867203
+</td>
+<td style="text-align:right;">
+-1.9075962
+</td>
+<td style="text-align:right;">
+0.0564434
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.7943374
+</td>
+<td style="text-align:right;">
+0.8051203
+</td>
+<td style="text-align:right;">
+0.9866071
+</td>
+<td style="text-align:right;">
+0.3238353
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.7675725
+</td>
+<td style="text-align:right;">
+0.8646234
+</td>
+<td style="text-align:right;">
+0.8877536
+</td>
+<td style="text-align:right;">
+0.3746733
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+-0.9696313
+</td>
+<td style="text-align:right;">
+1.1053932
+</td>
+<td style="text-align:right;">
+-0.8771822
+</td>
+<td style="text-align:right;">
+0.3803877
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+1.5775330
+</td>
+<td style="text-align:right;">
+1.2572846
+</td>
+<td style="text-align:right;">
+1.2547143
+</td>
+<td style="text-align:right;">
+0.2095825
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+1.0731255
+</td>
+<td style="text-align:right;">
+1.2715891
+</td>
+<td style="text-align:right;">
+0.8439247
+</td>
+<td style="text-align:right;">
+0.3987115
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+1.1040567
+</td>
+<td style="text-align:right;">
+1.3079268
+</td>
+<td style="text-align:right;">
+0.8441273
+</td>
+<td style="text-align:right;">
+0.3985983
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lost-5-percent-overall" class="section level5">
+<h5>Lost 5 percent overall</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 5 percent overall&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 234.9529095</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.0769159
+</td>
+<td style="text-align:right;">
+1.0873069
+</td>
+<td style="text-align:right;">
+-1.9101469
+</td>
+<td style="text-align:right;">
+0.0561143
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.8140121
+</td>
+<td style="text-align:right;">
+0.8053635
+</td>
+<td style="text-align:right;">
+1.0107387
+</td>
+<td style="text-align:right;">
+0.3121415
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.9038448
+</td>
+<td style="text-align:right;">
+0.8656477
+</td>
+<td style="text-align:right;">
+1.0441255
+</td>
+<td style="text-align:right;">
+0.2964273
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+-1.0164486
+</td>
+<td style="text-align:right;">
+1.1057366
+</td>
+<td style="text-align:right;">
+-0.9192502
+</td>
+<td style="text-align:right;">
+0.3579647
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+1.5972009
+</td>
+<td style="text-align:right;">
+1.2569601
+</td>
+<td style="text-align:right;">
+1.2706854
+</td>
+<td style="text-align:right;">
+0.2038406
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+1.0144328
+</td>
+<td style="text-align:right;">
+1.2721770
+</td>
+<td style="text-align:right;">
+0.7973992
+</td>
+<td style="text-align:right;">
+0.4252193
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+1.2439132
+</td>
+<td style="text-align:right;">
+1.3062156
+</td>
+<td style="text-align:right;">
+0.9523031
+</td>
+<td style="text-align:right;">
+0.3409433
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="met-fat-goal" class="section level5">
+<h5>Met fat goal</h5>
+<pre class="r"><code>mod &lt;- &quot;Met fat goal&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 232.1732988</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.4678964
+</td>
+<td style="text-align:right;">
+0.7363147
+</td>
+<td style="text-align:right;">
+0.6354571
+</td>
+<td style="text-align:right;">
+0.5251304
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.3594797
+</td>
+<td style="text-align:right;">
+0.7489299
+</td>
+<td style="text-align:right;">
+0.4799911
+</td>
+<td style="text-align:right;">
+0.6312337
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.9949930
+</td>
+<td style="text-align:right;">
+0.8343969
+</td>
+<td style="text-align:right;">
+1.1924697
+</td>
+<td style="text-align:right;">
+0.2330771
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.3799685
+</td>
+<td style="text-align:right;">
+0.9331000
+</td>
+<td style="text-align:right;">
+0.4072109
+</td>
+<td style="text-align:right;">
+0.6838531
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.1185481
+</td>
+<td style="text-align:right;">
+0.9917364
+</td>
+<td style="text-align:right;">
+-0.1195359
+</td>
+<td style="text-align:right;">
+0.9048508
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.5012236
+</td>
+<td style="text-align:right;">
+1.0022224
+</td>
+<td style="text-align:right;">
+-0.5001121
+</td>
+<td style="text-align:right;">
+0.6169961
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-0.6225466
+</td>
+<td style="text-align:right;">
+1.0470418
+</td>
+<td style="text-align:right;">
+-0.5945766
+</td>
+<td style="text-align:right;">
+0.5521265
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="met-exercise-goal-at-least-50-percent" class="section level5">
+<h5>Met exercise goal at least 50 percent</h5>
+<pre class="r"><code>mod &lt;- &quot;Met exercise goal at least 50 percent&quot;
+
+a &lt;- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic &lt;- log_simple[[mod]]$aic</code></pre>
+<p>AIC: 241.91999</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-0.5590032
+</td>
+<td style="text-align:right;">
+0.7383135
+</td>
+<td style="text-align:right;">
+-0.7571353
+</td>
+<td style="text-align:right;">
+0.4489688
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.3726784
+</td>
+<td style="text-align:right;">
+0.7445861
+</td>
+<td style="text-align:right;">
+0.5005175
+</td>
+<td style="text-align:right;">
+0.6167108
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.6113877
+</td>
+<td style="text-align:right;">
+0.8149508
+</td>
+<td style="text-align:right;">
+0.7502142
+</td>
+<td style="text-align:right;">
+0.4531257
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.0058609
+</td>
+<td style="text-align:right;">
+0.9265142
+</td>
+<td style="text-align:right;">
+0.0063258
+</td>
+<td style="text-align:right;">
+0.9949528
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.3674366
+</td>
+<td style="text-align:right;">
+0.9788024
+</td>
+<td style="text-align:right;">
+0.3753940
+</td>
+<td style="text-align:right;">
+0.7073674
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+0.4714590
+</td>
+<td style="text-align:right;">
+0.9910911
+</td>
+<td style="text-align:right;">
+0.4756969
+</td>
+<td style="text-align:right;">
+0.6342903
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+1.2330402
+</td>
+<td style="text-align:right;">
+1.0535071
+</td>
+<td style="text-align:right;">
+1.1704147
+</td>
+<td style="text-align:right;">
+0.2418341
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="complex-model" class="section level4">
+<h4>Complex Model</h4>
+<p>The complex model examines the effect of readiness to change and also includes an interaction between responses on the readiness to change survey, as well as potential effects of age, gender and BMI.</p>
 <pre class="r"><code>model_log &lt;- function(x){
 
   model &lt;- glm(
@@ -2780,84 +3734,1976 @@ Maintain
       BMI, 
     data = df.processed, 
     family = binomial
-    ) %&gt;% 
-    summary()
+    )
   
   return(
-    as.data.frame(
-      model$coefficients
-      )
+    model
     )
 }
 
-binary_list &lt;- lapply(binary_vars, model_log)
+log_complex &lt;- lapply(binary_vars, model_log)</code></pre>
+<div id="lost-7-percent-during-core-1" class="section level5">
+<h5>Lost 7 percent during core</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 7 percent during core&quot;
 
-for (i in names(binary_list)){
-  
-  b &lt;- binary_list[[i]]$`Pr(&gt;|z|)`
-  
-  sig.p &lt;- ifelse(
-    0.05 &gt;=
-    min(
-      b[2:length(b)]
-    ),
-    TRUE,
-    FALSE
-  )
-  
-  if (sig.p == TRUE) {
-    print(&quot;==============================================&quot;)
-    print(i)
-    print(binary_list[[i]][c(1,4)])
-  }  
-}</code></pre>
-<pre><code>## [1] &quot;==============================================&quot;
-## [1] &quot;Lost 7 percent during core&quot;
-##                                                               Estimate
-## (Intercept)                                                -3.93926423
-## rtc_diet_groupsPreparation                                -15.66426653
-## rtc_diet_groupsAction                                      16.03407318
-## rtc_diet_groupsMaintain                                     0.07437021
-## rtc_exercise_groupsPreparation                            -15.69020988
-## rtc_exercise_groupsAction                                 -16.02048741
-## rtc_exercise_groupsMaintain                               -15.96818718
-## Age                                                         0.03148730
-## GenderMale                                                  0.08585784
-## BMI                                                         0.01411515
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  32.82616497
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation        0.51359712
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation     16.57972675
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       31.98271462
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             1.18527034
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          -0.23031275
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     32.12539866
-##                                                             Pr(&gt;|z|)
-## (Intercept)                                               0.02107133
-## rtc_diet_groupsPreparation                                0.99684083
-## rtc_diet_groupsAction                                     0.99676625
-## rtc_diet_groupsMaintain                                   0.99998623
-## rtc_exercise_groupsPreparation                            0.99442220
-## rtc_exercise_groupsAction                                 0.99424157
-## rtc_exercise_groupsMaintain                               0.99677954
-## Age                                                       0.04944934
-## GenderMale                                                0.88253740
-## BMI                                                       0.53588687
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.99424177
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.99990991
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.99727703
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.99437474
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.99979153
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.99996716
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.99541863</code></pre>
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 225.83985</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-3.9392642
+</td>
+<td style="text-align:right;">
+1.7077459
+</td>
+<td style="text-align:right;">
+-2.3067039
+</td>
+<td style="text-align:right;">
+0.0210713
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-15.6642665
+</td>
+<td style="text-align:right;">
+3956.1804749
+</td>
+<td style="text-align:right;">
+-0.0039594
+</td>
+<td style="text-align:right;">
+0.9968408
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+16.0340732
+</td>
+<td style="text-align:right;">
+3956.1805112
+</td>
+<td style="text-align:right;">
+0.0040529
+</td>
+<td style="text-align:right;">
+0.9967662
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.0743702
+</td>
+<td style="text-align:right;">
+4308.6589901
+</td>
+<td style="text-align:right;">
+0.0000173
+</td>
+<td style="text-align:right;">
+0.9999862
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-15.6902099
+</td>
+<td style="text-align:right;">
+2244.4113457
+</td>
+<td style="text-align:right;">
+-0.0069908
+</td>
+<td style="text-align:right;">
+0.9944222
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-16.0204874
+</td>
+<td style="text-align:right;">
+2219.7700461
+</td>
+<td style="text-align:right;">
+-0.0072172
+</td>
+<td style="text-align:right;">
+0.9942416
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-15.9681872
+</td>
+<td style="text-align:right;">
+3956.1805075
+</td>
+<td style="text-align:right;">
+-0.0040363
+</td>
+<td style="text-align:right;">
+0.9967795
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0314873
+</td>
+<td style="text-align:right;">
+0.0160265
+</td>
+<td style="text-align:right;">
+1.9646968
+</td>
+<td style="text-align:right;">
+0.0494493
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+0.0858578
+</td>
+<td style="text-align:right;">
+0.5810888
+</td>
+<td style="text-align:right;">
+0.1477534
+</td>
+<td style="text-align:right;">
+0.8825374
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+0.0141152
+</td>
+<td style="text-align:right;">
+0.0228015
+</td>
+<td style="text-align:right;">
+0.6190448
+</td>
+<td style="text-align:right;">
+0.5358869
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+32.8261650
+</td>
+<td style="text-align:right;">
+4548.4882165
+</td>
+<td style="text-align:right;">
+0.0072169
+</td>
+<td style="text-align:right;">
+0.9942418
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.5135971
+</td>
+<td style="text-align:right;">
+4548.4882970
+</td>
+<td style="text-align:right;">
+0.0001129
+</td>
+<td style="text-align:right;">
+0.9999099
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+16.5797267
+</td>
+<td style="text-align:right;">
+4858.1811651
+</td>
+<td style="text-align:right;">
+0.0034127
+</td>
+<td style="text-align:right;">
+0.9972770
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+31.9827146
+</td>
+<td style="text-align:right;">
+4536.3798385
+</td>
+<td style="text-align:right;">
+0.0070503
+</td>
+<td style="text-align:right;">
+0.9943747
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+1.1852703
+</td>
+<td style="text-align:right;">
+4536.3798705
+</td>
+<td style="text-align:right;">
+0.0002613
+</td>
+<td style="text-align:right;">
+0.9997915
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.2303128
+</td>
+<td style="text-align:right;">
+5595.6672826
+</td>
+<td style="text-align:right;">
+-0.0000412
+</td>
+<td style="text-align:right;">
+0.9999672
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+32.1253987
+</td>
+<td style="text-align:right;">
+5594.8840303
+</td>
+<td style="text-align:right;">
+0.0057419
+</td>
+<td style="text-align:right;">
+0.9954186
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="linear-model-for-continuous-outcomes" class="section level2">
-<h2>Linear model for continuous outcomes</h2>
+<div id="lost-7-percent-overall-1" class="section level5">
+<h5>Lost 7 percent overall</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 7 percent overall&quot;
+
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 229.752641</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-3.2797004
+</td>
+<td style="text-align:right;">
+1.6607374
+</td>
+<td style="text-align:right;">
+-1.9748459
+</td>
+<td style="text-align:right;">
+0.0482856
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-15.7183617
+</td>
+<td style="text-align:right;">
+3956.1804577
+</td>
+<td style="text-align:right;">
+-0.0039731
+</td>
+<td style="text-align:right;">
+0.9968299
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+16.1333444
+</td>
+<td style="text-align:right;">
+3956.1804942
+</td>
+<td style="text-align:right;">
+0.0040780
+</td>
+<td style="text-align:right;">
+0.9967462
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.0703647
+</td>
+<td style="text-align:right;">
+4312.6728993
+</td>
+<td style="text-align:right;">
+0.0000163
+</td>
+<td style="text-align:right;">
+0.9999870
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-15.7691127
+</td>
+<td style="text-align:right;">
+2237.6302641
+</td>
+<td style="text-align:right;">
+-0.0070472
+</td>
+<td style="text-align:right;">
+0.9943772
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-16.0360820
+</td>
+<td style="text-align:right;">
+2246.2311055
+</td>
+<td style="text-align:right;">
+-0.0071391
+</td>
+<td style="text-align:right;">
+0.9943039
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-16.0382582
+</td>
+<td style="text-align:right;">
+3956.1804895
+</td>
+<td style="text-align:right;">
+-0.0040540
+</td>
+<td style="text-align:right;">
+0.9967654
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0266642
+</td>
+<td style="text-align:right;">
+0.0156199
+</td>
+<td style="text-align:right;">
+1.7070613
+</td>
+<td style="text-align:right;">
+0.0878107
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+0.2622775
+</td>
+<td style="text-align:right;">
+0.5749719
+</td>
+<td style="text-align:right;">
+0.4561571
+</td>
+<td style="text-align:right;">
+0.6482770
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+0.0035802
+</td>
+<td style="text-align:right;">
+0.0224410
+</td>
+<td style="text-align:right;">
+0.1595404
+</td>
+<td style="text-align:right;">
+0.8732431
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+33.1702385
+</td>
+<td style="text-align:right;">
+4545.1459651
+</td>
+<td style="text-align:right;">
+0.0072979
+</td>
+<td style="text-align:right;">
+0.9941771
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.4670038
+</td>
+<td style="text-align:right;">
+4545.1460460
+</td>
+<td style="text-align:right;">
+0.0001027
+</td>
+<td style="text-align:right;">
+0.9999180
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+16.6418671
+</td>
+<td style="text-align:right;">
+4858.6146603
+</td>
+<td style="text-align:right;">
+0.0034252
+</td>
+<td style="text-align:right;">
+0.9972671
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+32.3326638
+</td>
+<td style="text-align:right;">
+4549.3864441
+</td>
+<td style="text-align:right;">
+0.0071070
+</td>
+<td style="text-align:right;">
+0.9943295
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+1.1035164
+</td>
+<td style="text-align:right;">
+4549.3864775
+</td>
+<td style="text-align:right;">
+0.0002426
+</td>
+<td style="text-align:right;">
+0.9998065
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.2191369
+</td>
+<td style="text-align:right;">
+5609.3294032
+</td>
+<td style="text-align:right;">
+-0.0000391
+</td>
+<td style="text-align:right;">
+0.9999688
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+32.2000654
+</td>
+<td style="text-align:right;">
+5594.8840068
+</td>
+<td style="text-align:right;">
+0.0057553
+</td>
+<td style="text-align:right;">
+0.9954080
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lost-5-percent-during-core-1" class="section level5">
+<h5>Lost 5 percent during core</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 5 percent during core&quot;
+
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 246.6170395</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.7690244
+</td>
+<td style="text-align:right;">
+1.5853127
+</td>
+<td style="text-align:right;">
+-1.7466739
+</td>
+<td style="text-align:right;">
+0.0806939
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-14.7541429
+</td>
+<td style="text-align:right;">
+2399.5449649
+</td>
+<td style="text-align:right;">
+-0.0061487
+</td>
+<td style="text-align:right;">
+0.9950941
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+16.1340460
+</td>
+<td style="text-align:right;">
+2399.5449056
+</td>
+<td style="text-align:right;">
+0.0067238
+</td>
+<td style="text-align:right;">
+0.9946352
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.1530959
+</td>
+<td style="text-align:right;">
+2621.3411174
+</td>
+<td style="text-align:right;">
+0.0000584
+</td>
+<td style="text-align:right;">
+0.9999534
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+1.2582505
+</td>
+<td style="text-align:right;">
+1.6513500
+</td>
+<td style="text-align:right;">
+0.7619526
+</td>
+<td style="text-align:right;">
+0.4460883
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+0.9187257
+</td>
+<td style="text-align:right;">
+1.6526528
+</td>
+<td style="text-align:right;">
+0.5559097
+</td>
+<td style="text-align:right;">
+0.5782726
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-14.9653589
+</td>
+<td style="text-align:right;">
+2399.5449826
+</td>
+<td style="text-align:right;">
+-0.0062367
+</td>
+<td style="text-align:right;">
+0.9950238
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0177109
+</td>
+<td style="text-align:right;">
+0.0145960
+</td>
+<td style="text-align:right;">
+1.2134053
+</td>
+<td style="text-align:right;">
+0.2249749
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+-0.2843444
+</td>
+<td style="text-align:right;">
+0.5450556
+</td>
+<td style="text-align:right;">
+-0.5216797
+</td>
+<td style="text-align:right;">
+0.6018934
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+0.0025476
+</td>
+<td style="text-align:right;">
+0.0218716
+</td>
+<td style="text-align:right;">
+0.1164783
+</td>
+<td style="text-align:right;">
+0.9072735
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+15.5827592
+</td>
+<td style="text-align:right;">
+2399.5452979
+</td>
+<td style="text-align:right;">
+0.0064940
+</td>
+<td style="text-align:right;">
+0.9948185
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-16.0456870
+</td>
+<td style="text-align:right;">
+2399.5453169
+</td>
+<td style="text-align:right;">
+-0.0066870
+</td>
+<td style="text-align:right;">
+0.9946646
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.4300005
+</td>
+<td style="text-align:right;">
+2621.3415718
+</td>
+<td style="text-align:right;">
+-0.0001640
+</td>
+<td style="text-align:right;">
+0.9998691
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+14.9265301
+</td>
+<td style="text-align:right;">
+2399.5453311
+</td>
+<td style="text-align:right;">
+0.0062206
+</td>
+<td style="text-align:right;">
+0.9950367
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-15.0402734
+</td>
+<td style="text-align:right;">
+2399.5452726
+</td>
+<td style="text-align:right;">
+-0.0062680
+</td>
+<td style="text-align:right;">
+0.9949989
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-16.1349529
+</td>
+<td style="text-align:right;">
+3122.3695856
+</td>
+<td style="text-align:right;">
+-0.0051675
+</td>
+<td style="text-align:right;">
+0.9958769
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+31.5711436
+</td>
+<td style="text-align:right;">
+3393.4689134
+</td>
+<td style="text-align:right;">
+0.0093035
+</td>
+<td style="text-align:right;">
+0.9925770
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="lost-5-percent-overall-1" class="section level5">
+<h5>Lost 5 percent overall</h5>
+<pre class="r"><code>mod &lt;- &quot;Lost 5 percent overall&quot;
+
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 246.7259222</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-2.4119094
+</td>
+<td style="text-align:right;">
+1.5691599
+</td>
+<td style="text-align:right;">
+-1.5370705
+</td>
+<td style="text-align:right;">
+0.1242760
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-14.7711705
+</td>
+<td style="text-align:right;">
+2399.5449810
+</td>
+<td style="text-align:right;">
+-0.0061558
+</td>
+<td style="text-align:right;">
+0.9950884
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+16.9837126
+</td>
+<td style="text-align:right;">
+2399.5449070
+</td>
+<td style="text-align:right;">
+0.0070779
+</td>
+<td style="text-align:right;">
+0.9943527
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.0978447
+</td>
+<td style="text-align:right;">
+2624.4864861
+</td>
+<td style="text-align:right;">
+0.0000373
+</td>
+<td style="text-align:right;">
+0.9999703
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+1.1579532
+</td>
+<td style="text-align:right;">
+1.6502109
+</td>
+<td style="text-align:right;">
+0.7017001
+</td>
+<td style="text-align:right;">
+0.4828662
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+0.9345258
+</td>
+<td style="text-align:right;">
+1.6482712
+</td>
+<td style="text-align:right;">
+0.5669733
+</td>
+<td style="text-align:right;">
+0.5707323
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-14.9626614
+</td>
+<td style="text-align:right;">
+2399.5449835
+</td>
+<td style="text-align:right;">
+-0.0062356
+</td>
+<td style="text-align:right;">
+0.9950247
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0137776
+</td>
+<td style="text-align:right;">
+0.0145337
+</td>
+<td style="text-align:right;">
+0.9479796
+</td>
+<td style="text-align:right;">
+0.3431399
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+-0.0183854
+</td>
+<td style="text-align:right;">
+0.5461146
+</td>
+<td style="text-align:right;">
+-0.0336658
+</td>
+<td style="text-align:right;">
+0.9731437
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+-0.0016579
+</td>
+<td style="text-align:right;">
+0.0218391
+</td>
+<td style="text-align:right;">
+-0.0759153
+</td>
+<td style="text-align:right;">
+0.9394865
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+15.7452727
+</td>
+<td style="text-align:right;">
+2399.5453141
+</td>
+<td style="text-align:right;">
+0.0065618
+</td>
+<td style="text-align:right;">
+0.9947645
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-16.8119902
+</td>
+<td style="text-align:right;">
+2399.5453187
+</td>
+<td style="text-align:right;">
+-0.0070063
+</td>
+<td style="text-align:right;">
+0.9944098
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.2626078
+</td>
+<td style="text-align:right;">
+2624.4869429
+</td>
+<td style="text-align:right;">
+-0.0001001
+</td>
+<td style="text-align:right;">
+0.9999202
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+14.9528374
+</td>
+<td style="text-align:right;">
+2399.5453448
+</td>
+<td style="text-align:right;">
+0.0062315
+</td>
+<td style="text-align:right;">
+0.9950280
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-15.9086225
+</td>
+<td style="text-align:right;">
+2399.5452714
+</td>
+<td style="text-align:right;">
+-0.0066298
+</td>
+<td style="text-align:right;">
+0.9947102
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-16.0581592
+</td>
+<td style="text-align:right;">
+3125.0632598
+</td>
+<td style="text-align:right;">
+-0.0051385
+</td>
+<td style="text-align:right;">
+0.9959001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+31.5231033
+</td>
+<td style="text-align:right;">
+3393.4689256
+</td>
+<td style="text-align:right;">
+0.0092893
+</td>
+<td style="text-align:right;">
+0.9925883
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="met-fat-goal-1" class="section level5">
+<h5>Met fat goal</h5>
+<pre class="r"><code>mod &lt;- &quot;Met fat goal&quot;
+
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 243.186868</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-0.4263469
+</td>
+<td style="text-align:right;">
+1.3995823
+</td>
+<td style="text-align:right;">
+-0.3046244
+</td>
+<td style="text-align:right;">
+0.7606523
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-16.4564821
+</td>
+<td style="text-align:right;">
+1455.3977755
+</td>
+<td style="text-align:right;">
+-0.0113072
+</td>
+<td style="text-align:right;">
+0.9909783
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+16.6665097
+</td>
+<td style="text-align:right;">
+1455.3979779
+</td>
+<td style="text-align:right;">
+0.0114515
+</td>
+<td style="text-align:right;">
+0.9908632
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+14.9972790
+</td>
+<td style="text-align:right;">
+1455.3978306
+</td>
+<td style="text-align:right;">
+0.0103046
+</td>
+<td style="text-align:right;">
+0.9917783
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.3907596
+</td>
+<td style="text-align:right;">
+1.5045480
+</td>
+<td style="text-align:right;">
+-0.2597189
+</td>
+<td style="text-align:right;">
+0.7950806
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-1.4711791
+</td>
+<td style="text-align:right;">
+1.5079635
+</td>
+<td style="text-align:right;">
+-0.9756065
+</td>
+<td style="text-align:right;">
+0.3292595
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+-16.2120007
+</td>
+<td style="text-align:right;">
+1455.3978036
+</td>
+<td style="text-align:right;">
+-0.0111392
+</td>
+<td style="text-align:right;">
+0.9911124
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0015428
+</td>
+<td style="text-align:right;">
+0.0142366
+</td>
+<td style="text-align:right;">
+0.1083689
+</td>
+<td style="text-align:right;">
+0.9137031
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+0.1261556
+</td>
+<td style="text-align:right;">
+0.5640467
+</td>
+<td style="text-align:right;">
+0.2236616
+</td>
+<td style="text-align:right;">
+0.8230206
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+0.0354221
+</td>
+<td style="text-align:right;">
+0.0240492
+</td>
+<td style="text-align:right;">
+1.4729023
+</td>
+<td style="text-align:right;">
+0.1407774
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+16.5205857
+</td>
+<td style="text-align:right;">
+1455.3983259
+</td>
+<td style="text-align:right;">
+0.0113512
+</td>
+<td style="text-align:right;">
+0.9909432
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-16.3864160
+</td>
+<td style="text-align:right;">
+1455.3986827
+</td>
+<td style="text-align:right;">
+-0.0112591
+</td>
+<td style="text-align:right;">
+0.9910168
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-13.8673466
+</td>
+<td style="text-align:right;">
+1455.3988202
+</td>
+<td style="text-align:right;">
+-0.0095282
+</td>
+<td style="text-align:right;">
+0.9923977
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+17.2519933
+</td>
+<td style="text-align:right;">
+1455.3983750
+</td>
+<td style="text-align:right;">
+0.0118538
+</td>
+<td style="text-align:right;">
+0.9905423
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-15.1386172
+</td>
+<td style="text-align:right;">
+1455.3986087
+</td>
+<td style="text-align:right;">
+-0.0104017
+</td>
+<td style="text-align:right;">
+0.9917008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-14.3054504
+</td>
+<td style="text-align:right;">
+1455.3990475
+</td>
+<td style="text-align:right;">
+-0.0098292
+</td>
+<td style="text-align:right;">
+0.9921575
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+32.1082358
+</td>
+<td style="text-align:right;">
+2058.2431867
+</td>
+<td style="text-align:right;">
+0.0155998
+</td>
+<td style="text-align:right;">
+0.9875536
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="met-exercise-goal-at-least-50-percent-1" class="section level5">
+<h5>Met exercise goal at least 50 percent</h5>
+<pre class="r"><code>mod &lt;- &quot;Met exercise goal at least 50 percent&quot;
+
+a &lt;- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic &lt;- log_complex[[mod]]$aic</code></pre>
+<p>AIC: 245.0492569</p>
+<pre class="r"><code>knitr::kable(
+  a
+) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+z value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|z|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-0.5221395
+</td>
+<td style="text-align:right;">
+1.3201166
+</td>
+<td style="text-align:right;">
+-0.3955253
+</td>
+<td style="text-align:right;">
+0.6924553
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+-16.3082449
+</td>
+<td style="text-align:right;">
+2399.5448578
+</td>
+<td style="text-align:right;">
+-0.0067964
+</td>
+<td style="text-align:right;">
+0.9945773
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.1251132
+</td>
+<td style="text-align:right;">
+2627.3546481
+</td>
+<td style="text-align:right;">
+0.0000476
+</td>
+<td style="text-align:right;">
+0.9999620
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+-16.9765547
+</td>
+<td style="text-align:right;">
+2399.5449013
+</td>
+<td style="text-align:right;">
+-0.0070749
+</td>
+<td style="text-align:right;">
+0.9943551
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.6204320
+</td>
+<td style="text-align:right;">
+1.4952735
+</td>
+<td style="text-align:right;">
+-0.4149288
+</td>
+<td style="text-align:right;">
+0.6781941
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+-0.6792102
+</td>
+<td style="text-align:right;">
+1.4622064
+</td>
+<td style="text-align:right;">
+-0.4645105
+</td>
+<td style="text-align:right;">
+0.6422821
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+16.5031361
+</td>
+<td style="text-align:right;">
+2399.5448504
+</td>
+<td style="text-align:right;">
+0.0068776
+</td>
+<td style="text-align:right;">
+0.9945125
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+0.0160850
+</td>
+<td style="text-align:right;">
+0.0140918
+</td>
+<td style="text-align:right;">
+1.1414430
+</td>
+<td style="text-align:right;">
+0.2536856
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenderMale
+</td>
+<td style="text-align:right;">
+0.8085626
+</td>
+<td style="text-align:right;">
+0.5919106
+</td>
+<td style="text-align:right;">
+1.3660215
+</td>
+<td style="text-align:right;">
+0.1719322
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+-0.0149503
+</td>
+<td style="text-align:right;">
+0.0219974
+</td>
+<td style="text-align:right;">
+-0.6796404
+</td>
+<td style="text-align:right;">
+0.4967322
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+17.3654255
+</td>
+<td style="text-align:right;">
+2399.5452084
+</td>
+<td style="text-align:right;">
+0.0072370
+</td>
+<td style="text-align:right;">
+0.9942258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+-0.2390269
+</td>
+<td style="text-align:right;">
+2627.3550542
+</td>
+<td style="text-align:right;">
+-0.0000910
+</td>
+<td style="text-align:right;">
+0.9999274
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+18.4272272
+</td>
+<td style="text-align:right;">
+2399.5454248
+</td>
+<td style="text-align:right;">
+0.0076795
+</td>
+<td style="text-align:right;">
+0.9938727
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+17.1303012
+</td>
+<td style="text-align:right;">
+2399.5452193
+</td>
+<td style="text-align:right;">
+0.0071390
+</td>
+<td style="text-align:right;">
+0.9943040
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+1.8892356
+</td>
+<td style="text-align:right;">
+2627.3549954
+</td>
+<td style="text-align:right;">
+0.0007191
+</td>
+<td style="text-align:right;">
+0.9994263
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain:rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+17.5654626
+</td>
+<td style="text-align:right;">
+2399.5456364
+</td>
+<td style="text-align:right;">
+0.0073203
+</td>
+<td style="text-align:right;">
+0.9941593
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.6732259
+</td>
+<td style="text-align:right;">
+3393.4688398
+</td>
+<td style="text-align:right;">
+0.0001984
+</td>
+<td style="text-align:right;">
+0.9998417
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="linear-model" class="section level3">
+<h3>Linear Model</h3>
+<div id="simple-model-1" class="section level4">
+<h4>Simple Model</h4>
 <pre class="r"><code>model_lm &lt;- function(x){
   
   model &lt;- lm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups * 
+      rtc_diet_groups + 
       rtc_exercise_groups +
       Age + 
       Gender +
@@ -2897,194 +5743,45 @@ for (i in names(continuous_list)){
 }</code></pre>
 <pre><code>## [1] &quot;===============================================&quot;
 ## [1] &quot;Core attendance&quot;
-##                                                           Beta.estimate
-## (Intercept)                                                 2.363593688
-## rtc_diet_groupsPreparation                                 -5.370144322
-## rtc_diet_groupsAction                                       1.698877954
-## rtc_diet_groupsMaintain                                     0.268909699
-## rtc_exercise_groupsPreparation                              3.306384131
-## rtc_exercise_groupsAction                                  -2.412061021
-## rtc_exercise_groupsMaintain                                 1.463735191
-## Age                                                         0.095258021
-## GenderMale                                                 -1.212982009
-## BMI                                                         0.009672224
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation   6.048337981
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation       -2.497896749
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation      0.346167424
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       10.670131845
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             4.367743350
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction           1.596272124
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain      6.986218911
-##                                                               p.value
-## (Intercept)                                               0.397485182
-## rtc_diet_groupsPreparation                                0.253110792
-## rtc_diet_groupsAction                                     0.724570012
-## rtc_diet_groupsMaintain                                   0.955480767
-## rtc_exercise_groupsPreparation                            0.279902485
-## rtc_exercise_groupsAction                                 0.430259940
-## rtc_exercise_groupsMaintain                               0.756565693
-## Age                                                       0.001320024
-## GenderMale                                                0.290133669
-## BMI                                                       0.834378297
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.260473315
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.657871080
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.952285492
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.050706399
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.431428243
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.799139585
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.286518267
-## [1] &quot;===============================================&quot;
-## [1] &quot;Post-core attendance&quot;
-##                                                           Beta.estimate
-## (Intercept)                                                -0.308434405
-## rtc_diet_groupsPreparation                                 -0.605006929
-## rtc_diet_groupsAction                                       0.864191409
-## rtc_diet_groupsMaintain                                     0.054202594
-## rtc_exercise_groupsPreparation                             -0.403855916
-## rtc_exercise_groupsAction                                  -0.913975342
-## rtc_exercise_groupsMaintain                                 0.016160688
-## Age                                                         0.024463723
-## GenderMale                                                 -0.244355037
-## BMI                                                        -0.008141755
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation   1.985914070
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation        0.061740110
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation      0.889416917
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction        2.376587553
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             1.162931718
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          -0.217492145
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain      1.475181681
-##                                                              p.value
-## (Intercept)                                               0.79278122
-## rtc_diet_groupsPreparation                                0.75913647
-## rtc_diet_groupsAction                                     0.67013447
-## rtc_diet_groupsMaintain                                   0.97866375
-## rtc_exercise_groupsPreparation                            0.75334464
-## rtc_exercise_groupsAction                                 0.47741025
-## rtc_exercise_groupsMaintain                               0.99350865
-## Age                                                       0.04759628
-## GenderMale                                                0.61201950
-## BMI                                                       0.67578075
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.37948435
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.97923823
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.71486959
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.29879849
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.61836436
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.93432070
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.59222083
+##                                Beta.estimate     p.value
+## (Intercept)                       1.21330880 0.653856814
+## rtc_diet_groupsPreparation        1.79948901 0.268626356
+## rtc_diet_groupsAction             1.78095276 0.312599494
+## rtc_diet_groupsMaintain           0.84490997 0.673413608
+## rtc_exercise_groupsPreparation    3.01919060 0.154483975
+## rtc_exercise_groupsAction         1.92808794 0.368945144
+## rtc_exercise_groupsMaintain       2.19977730 0.333646998
+## Age                               0.08985946 0.002036162
+## GenderMale                       -1.17639962 0.295656795
+## BMI                               0.02393938 0.600883518
 ## [1] &quot;===============================================&quot;
 ## [1] &quot;Overall attendance&quot;
-##                                                           Beta.estimate
-## (Intercept)                                                 2.055159283
-## rtc_diet_groupsPreparation                                 -5.975151252
-## rtc_diet_groupsAction                                       2.563069362
-## rtc_diet_groupsMaintain                                     0.323112293
-## rtc_exercise_groupsPreparation                              2.902528214
-## rtc_exercise_groupsAction                                  -3.326036363
-## rtc_exercise_groupsMaintain                                 1.479895879
-## Age                                                         0.119721744
-## GenderMale                                                 -1.457337046
-## BMI                                                         0.001530469
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation   8.034252051
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation       -2.436156640
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation      1.235584341
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       13.046719398
-## rtc_diet_groupsAction:rtc_exercise_groupsAction             5.530675068
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction           1.378779979
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain      8.461400592
-##                                                               p.value
-## (Intercept)                                               0.566005062
-## rtc_diet_groupsPreparation                                0.321251972
-## rtc_diet_groupsAction                                     0.678567069
-## rtc_diet_groupsMaintain                                   0.958292495
-## rtc_exercise_groupsPreparation                            0.459132829
-## rtc_exercise_groupsAction                                 0.396542596
-## rtc_exercise_groupsMaintain                               0.806948157
-## Age                                                       0.001638493
-## GenderMale                                                0.321645851
-## BMI                                                       0.979420033
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.243944779
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.736285396
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.867758648
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.062359946
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.437328179
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.863935701
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.314134225
+##                                Beta.estimate     p.value
+## (Intercept)                       0.63230121 0.855293066
+## rtc_diet_groupsPreparation        3.03165878 0.146482611
+## rtc_diet_groupsAction             2.99435754 0.185801428
+## rtc_diet_groupsMaintain           1.28230549 0.617774781
+## rtc_exercise_groupsPreparation    2.96959881 0.273919683
+## rtc_exercise_groupsAction         1.80000983 0.512597523
+## rtc_exercise_groupsMaintain       2.11970717 0.467040949
+## Age                               0.11293727 0.002472497
+## GenderMale                       -1.43799967 0.318507967
+## BMI                               0.01884113 0.747973219
 ## [1] &quot;===============================================&quot;
 ## [1] &quot;Maximum weight lost&quot;
-##                                                           Beta.estimate
-## (Intercept)                                                 -7.49226082
-## rtc_diet_groupsPreparation                                   1.00507988
-## rtc_diet_groupsAction                                        4.58303910
-## rtc_diet_groupsMaintain                                     -1.12133896
-## rtc_exercise_groupsPreparation                              -1.29146875
-## rtc_exercise_groupsAction                                   -4.31362715
-## rtc_exercise_groupsMaintain                                 -3.78245287
-## Age                                                          0.06530759
-## GenderMale                                                   7.53263150
-## BMI                                                          0.35637474
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation    6.16715087
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation         1.87898872
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation       6.38398576
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction         5.25005748
-## rtc_diet_groupsAction:rtc_exercise_groupsAction              5.45538018
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction            0.86129115
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain       3.59908427
-##                                                              p.value
-## (Intercept)                                               0.32644983
-## rtc_diet_groupsPreparation                                0.93746710
-## rtc_diet_groupsAction                                     0.72790180
-## rtc_diet_groupsMaintain                                   0.93209919
-## rtc_exercise_groupsPreparation                            0.87700475
-## rtc_exercise_groupsAction                                 0.60544510
-## rtc_exercise_groupsMaintain                               0.76936585
-## Age                                                       0.41294125
-## GenderMale                                                0.01700998
-## BMI                                                       0.00536186
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.67397128
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.90292606
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.68636278
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.72332586
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.71887952
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.95991659
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.84044504
-## [1] &quot;===============================================&quot;
-## [1] &quot;Met fat goal (percentage of sessions)&quot;
-##                                                           Beta.estimate
-## (Intercept)                                                0.4992328244
-## rtc_diet_groupsPreparation                                -0.6479398020
-## rtc_diet_groupsAction                                      0.7962384985
-## rtc_diet_groupsMaintain                                    0.2521312055
-## rtc_exercise_groupsPreparation                             0.1269811986
-## rtc_exercise_groupsAction                                 -0.3678634600
-## rtc_exercise_groupsMaintain                               -0.5973204546
-## Age                                                       -0.0008072259
-## GenderMale                                                 0.0461759070
-## BMI                                                        0.0053728596
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation  0.4724591722
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      -0.8764435477
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    -0.2663196722
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction       0.9050700425
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           -0.3615255612
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction          0.0450476720
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain     1.1489284228
-##                                                              p.value
-## (Intercept)                                               0.03804323
-## rtc_diet_groupsPreparation                                0.10815193
-## rtc_diet_groupsAction                                     0.05523936
-## rtc_diet_groupsMaintain                                   0.54136666
-## rtc_exercise_groupsPreparation                            0.62750672
-## rtc_exercise_groupsAction                                 0.16110015
-## rtc_exercise_groupsMaintain                               0.14102591
-## Age                                                       0.74661656
-## GenderMale                                                0.63774895
-## BMI                                                       0.17633339
-## rtc_diet_groupsPreparation:rtc_exercise_groupsPreparation 0.30460300
-## rtc_diet_groupsAction:rtc_exercise_groupsPreparation      0.07105239
-## rtc_diet_groupsMaintain:rtc_exercise_groupsPreparation    0.59111318
-## rtc_diet_groupsPreparation:rtc_exercise_groupsAction      0.05295323
-## rtc_diet_groupsAction:rtc_exercise_groupsAction           0.44704118
-## rtc_diet_groupsMaintain:rtc_exercise_groupsAction         0.93317660
-## rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain    0.04171252</code></pre>
+##                                Beta.estimate    p.value
+## (Intercept)                      -8.17601545 0.26122385
+## rtc_diet_groupsPreparation        5.93411896 0.17468161
+## rtc_diet_groupsAction             7.42303868 0.11781735
+## rtc_diet_groupsMaintain           2.07403645 0.69999088
+## rtc_exercise_groupsPreparation    0.42317531 0.94056360
+## rtc_exercise_groupsAction        -2.65047169 0.64522602
+## rtc_exercise_groupsMaintain      -5.03845231 0.40935396
+## Age                               0.06088306 0.42991204
+## GenderMale                        7.55345217 0.01309726
+## BMI                               0.36416388 0.00343812</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div id="core-completers" class="section level1">
@@ -3719,6 +6416,209 @@ Met exercise goal (percentage of sessions)
   )</code></pre>
 <p><img src="data:image/png;base64,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" width="672" /></p>
 </div>
+</div>
+<div id="post-hoc-analysis" class="section level1">
+<h1>Post-hoc Analysis</h1>
+<p>Readiness to change responses were used to create aggregate groups. Individuals self-classifying as ‘Contemplative’ or ‘Preparation’ were grouped together and individuals self-classifying as ‘Action’ or ‘Maintain’ were grouped together. The models were then recreated with the new groups.</p>
+<pre class="r"><code>df.processed &lt;- df.processed %&gt;% 
+  mutate(
+    rtc_diet_post_groups = ifelse(
+      rtc_diet == &quot;preparation&quot; | rtc_diet == &quot;contemplative&quot;,
+      &quot;preparation&quot;,
+        ifelse(
+          rtc_diet == &quot;maintain&quot; | rtc_diet == &quot;action&quot;,
+          &quot;action&quot;,
+          NA
+        )
+    ),
+    rtc_exercise_post_groups = ifelse(
+      rtc_exercise == &quot;preparation&quot; | rtc_exercise == &quot;contemplative&quot;,
+      &quot;preparation&quot;,
+        ifelse(
+          rtc_exercise == &quot;maintain&quot; | rtc_exercise == &quot;action&quot;,
+          &quot;action&quot;,
+          NA
+        )
+    ),
+  )
+
+model_log &lt;- function(x){
+
+  model &lt;- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_post_groups * 
+      rtc_exercise_post_groups +
+      Age + 
+      Gender +
+      BMI, 
+    data = df.processed, 
+    family = binomial
+    ) %&gt;% 
+    summary()
+  
+  return(
+    as.data.frame(
+      model$coefficients
+      )
+    )
+}
+
+binary_list &lt;- lapply(binary_vars, model_log)
+
+for (i in names(binary_list)){
+  
+  b &lt;- binary_list[[i]]$`Pr(&gt;|z|)`
+  
+  sig.p &lt;- ifelse(
+    0.05 &gt;=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(&quot;==============================================&quot;)
+    print(i)
+    print(binary_list[[i]][c(1,4)])
+  }  
+}
+
+model_lm &lt;- function(x){
+  
+  model &lt;- lm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_post_groups * 
+      rtc_exercise_post_groups +
+      Age + 
+      Gender +
+      BMI, 
+    data = df.processed
+    ) %&gt;% 
+    summary()
+  
+  a &lt;- data.frame(
+        &quot;Beta estimate&quot; = model$coefficients[,1],
+        &quot;p-value&quot; = model$coefficients[,4]
+        )
+  
+  return(a)
+}
+
+continuous_list &lt;- lapply(cont_vars, model_lm)
+
+for (i in names(continuous_list)){
+  
+  b &lt;- continuous_list[[i]]$p.value
+  
+  sig.p &lt;- ifelse(
+    0.05 &gt;=
+    min(
+      b[2:length(b)]
+    ),
+    TRUE,
+    FALSE
+  )
+  
+  if (sig.p == TRUE) {
+    print(&quot;===============================================&quot;)
+    print(i)
+    print(continuous_list[[i]])
+  }  
+}</code></pre>
+<pre><code>## [1] &quot;===============================================&quot;
+## [1] &quot;Post-core attendance&quot;
+##                                                                     Beta.estimate
+## (Intercept)                                                          -0.066083296
+## rtc_diet_post_groupspreparation                                      -0.022204132
+## rtc_exercise_post_groupspreparation                                  -0.186449688
+## Age                                                                   0.025819229
+## GenderMale                                                           -0.166016757
+## BMI                                                                   0.002865464
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation   0.376119924
+##                                                                        p.value
+## (Intercept)                                                         0.95187400
+## rtc_diet_post_groupspreparation                                     0.96131213
+## rtc_exercise_post_groupspreparation                                 0.74852664
+## Age                                                                 0.04138465
+## GenderMale                                                          0.72791924
+## BMI                                                                 0.88025577
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation 0.58267845
+## [1] &quot;===============================================&quot;
+## [1] &quot;Overall attendance&quot;
+##                                                                     Beta.estimate
+## (Intercept)                                                            4.36665792
+## rtc_diet_post_groupspreparation                                       -0.43784674
+## rtc_exercise_post_groupspreparation                                   -0.04453588
+## Age                                                                    0.12022048
+## GenderMale                                                            -1.00214080
+## BMI                                                                    0.03628773
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation    1.46334684
+##                                                                         p.value
+## (Intercept)                                                         0.196755442
+## rtc_diet_post_groupspreparation                                     0.756277521
+## rtc_exercise_post_groupspreparation                                 0.980170657
+## Age                                                                 0.002236863
+## GenderMale                                                          0.495774991
+## BMI                                                                 0.536069561
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation 0.487940230
+## [1] &quot;===============================================&quot;
+## [1] &quot;Maximum weight lost&quot;
+##                                                                     Beta.estimate
+## (Intercept)                                                           -7.89511350
+## rtc_diet_post_groupspreparation                                       -1.29956568
+## rtc_exercise_post_groupspreparation                                    2.58722955
+## Age                                                                    0.06334526
+## GenderMale                                                             7.81668140
+## BMI                                                                    0.42975835
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation    1.91567916
+##                                                                          p.value
+## (Intercept)                                                         0.2653546291
+## rtc_diet_post_groupspreparation                                     0.6604648233
+## rtc_exercise_post_groupspreparation                                 0.4913877850
+## Age                                                                 0.4360607668
+## GenderMale                                                          0.0120549206
+## BMI                                                                 0.0005986015
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation 0.6648481367
+## [1] &quot;===============================================&quot;
+## [1] &quot;Met fat goal (percentage of sessions)&quot;
+##                                                                     Beta.estimate
+## (Intercept)                                                          0.3457940942
+## rtc_diet_post_groupspreparation                                     -0.1464561223
+## rtc_exercise_post_groupspreparation                                  0.0681960965
+## Age                                                                  0.0005667421
+## GenderMale                                                           0.0284811227
+## BMI                                                                  0.0076876160
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation  0.0267123446
+##                                                                        p.value
+## (Intercept)                                                         0.11950667
+## rtc_diet_post_groupspreparation                                     0.11477915
+## rtc_exercise_post_groupspreparation                                 0.56189129
+## Age                                                                 0.82353928
+## GenderMale                                                          0.76771866
+## BMI                                                                 0.04685413
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation 0.84680761
+## [1] &quot;===============================================&quot;
+## [1] &quot;Met exercise goal (percentage of sessions)&quot;
+##                                                                     Beta.estimate
+## (Intercept)                                                           0.417303025
+## rtc_diet_post_groupspreparation                                      -0.120822835
+## rtc_exercise_post_groupspreparation                                  -0.237180773
+## Age                                                                   0.004548888
+## GenderMale                                                            0.147757434
+## BMI                                                                  -0.002177263
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation   0.242586292
+##                                                                        p.value
+## (Intercept)                                                         0.06603378
+## rtc_diet_post_groupspreparation                                     0.20175015
+## rtc_exercise_post_groupspreparation                                 0.04933147
+## Age                                                                 0.08089276
+## GenderMale                                                          0.13455941
+## BMI                                                                 0.57904692
+## rtc_diet_post_groupspreparation:rtc_exercise_post_groupspreparation 0.08702226</code></pre>
 </div>
 
 

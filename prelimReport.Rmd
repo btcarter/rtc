@@ -520,7 +520,155 @@ knitr::kable(
 
 Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. The following measures were entered into the model: starting weight, age, gender, BMI, readiness to change diet, readiness to change exercise. An interaction between readiness to change diet and readiness to change exercise was included in the model. A logistic model was used to predict binary outcomes (e.g. did they lose 7% body weight by the end of the study). A linear model was used to predict countinuous outcomes (e.g. what percentage of their body weight were they able to lose).
 
-### Logistic models for categorical outcomes
+### Logistic model
+
+#### Simple Model
+
+This model is called the simple model because it assumes no interactions and only examines the effect of response to the readiness to change survey on the outcome variables without considering interactions between the survey responses or the effect of other factors such as age.
+
+```{r}
+
+model_log <- function(x){
+
+  model <- glm(
+    formula = 
+      df.processed[[x]] ~ 
+      rtc_diet_groups + 
+      rtc_exercise_groups, 
+    data = df.processed, 
+    family = binomial
+    )
+  
+  return(
+    model
+    )
+}
+
+log_simple <- lapply(binary_vars, model_log)
+
+```
+
+##### Lost 7 percent during core
+```{r}
+mod <- "Lost 7 percent during core"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 7 percent overall
+```{r}
+mod <- "Lost 7 percent overall"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 5 percent during core
+
+```{r}
+mod <- "Lost 5 percent during core"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 5 percent overall
+
+```{r}
+mod <- "Lost 5 percent overall"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met fat goal
+
+```{r}
+mod <- "Met fat goal"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met exercise goal at least 50 percent
+
+```{r}
+mod <- "Met exercise goal at least 50 percent"
+
+a <- as.data.frame(
+  summary(log_simple[[mod]])$coefficients
+)
+
+aic <- log_simple[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+#### Complex Model
+
+The complex model examines the effect of readiness to change and also includes an interaction between responses on the readiness to change survey, as well as potential effects of age, gender and BMI.
 
 ```{r}
 
@@ -536,41 +684,139 @@ model_log <- function(x){
       BMI, 
     data = df.processed, 
     family = binomial
-    ) %>% 
-    summary()
+    )
   
   return(
-    as.data.frame(
-      model$coefficients
-      )
+    model
     )
 }
 
-binary_list <- lapply(binary_vars, model_log)
-
-for (i in names(binary_list)){
-  
-  b <- binary_list[[i]]$`Pr(>|z|)`
-  
-  sig.p <- ifelse(
-    0.05 >=
-    min(
-      b[2:length(b)]
-    ),
-    TRUE,
-    FALSE
-  )
-  
-  if (sig.p == TRUE) {
-    print("==============================================")
-    print(i)
-    print(binary_list[[i]][c(1,4)])
-  }  
-}
+log_complex <- lapply(binary_vars, model_log)
 
 ```
 
-### Linear model for continuous outcomes
+##### Lost 7 percent during core
+```{r}
+mod <- "Lost 7 percent during core"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 7 percent overall
+```{r}
+mod <- "Lost 7 percent overall"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 5 percent during core
+
+```{r}
+mod <- "Lost 5 percent during core"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Lost 5 percent overall
+
+```{r}
+mod <- "Lost 5 percent overall"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met fat goal
+
+```{r}
+mod <- "Met fat goal"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+##### Met exercise goal at least 50 percent
+
+```{r}
+mod <- "Met exercise goal at least 50 percent"
+
+a <- as.data.frame(
+  summary(log_complex[[mod]])$coefficients
+)
+
+aic <- log_complex[[mod]]$aic
+```
+
+AIC: `r {aic}`
+
+```{r}
+knitr::kable(
+  a
+) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+
+### Linear Model
+
+#### Simple Model
 
 ```{r}
 
@@ -579,44 +825,16 @@ model_lm <- function(x){
   model <- lm(
     formula = 
       df.processed[[x]] ~ 
-      rtc_diet_groups * 
+      rtc_diet_groups + 
       rtc_exercise_groups +
       Age + 
       Gender +
       BMI, 
     data = df.processed
-    ) %>% 
-    summary()
-  
-  a <- data.frame(
-        "Beta estimate" = model$coefficients[,1],
-        "p-value" = model$coefficients[,4]
-        )
-  
-  return(a)
+    )
 }
 
 continuous_list <- lapply(cont_vars, model_lm)
-
-for (i in names(continuous_list)){
-  
-  b <- continuous_list[[i]]$p.value
-  
-  sig.p <- ifelse(
-    0.05 >=
-    min(
-      b[2:length(b)]
-    ),
-    TRUE,
-    FALSE
-  )
-  
-  if (sig.p == TRUE) {
-    print("===============================================")
-    print(i)
-    print(continuous_list[[i]])
-  }  
-}
 
 ```
 
@@ -841,7 +1059,7 @@ df.processed %>%
 
 
 
-# Secondary Analysis - Combining RTC Groups
+# Post-hoc Analysis
 
 Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups.
 
