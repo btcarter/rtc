@@ -1600,8 +1600,8 @@ div.tocify {
 <h1>Preliminary Analysis</h1>
 <div id="descriptives" class="section level2">
 <h2>Descriptives</h2>
-<div id="comparison-between-includedexcluded-individuals" class="section level3">
-<h3>Comparison between included/excluded individuals</h3>
+<div id="included-vs-excluded-individuals" class="section level3">
+<h3>Included vs Excluded individuals</h3>
 <pre class="r"><code>tab1 &lt;- compareGroups::compareGroups(
   Include ~ .- rtc_diet_groups - rtc_exercise - rtc_exercise_groups - rtc_diet,
   df.processed
@@ -1849,8 +1849,8 @@ Met exercise goal (percentage of sessions)
 </tbody>
 </table>
 </div>
-<div id="summary-statistics-of-included-participants" class="section level3">
-<h3>Summary statistics of included participants</h3>
+<div id="included-only" class="section level3">
+<h3>Included only</h3>
 <pre class="r"><code>df.processed &lt;- df.processed %&gt;% 
   filter(
     Include == &quot;TRUE&quot;
@@ -2042,8 +2042,8 @@ Met exercise goal (percentage of sessions)
 </table>
 </div>
 </div>
-<div id="comparison-of-categorical-variables-by-readiness-to-change" class="section level2">
-<h2>Comparison of categorical variables by readiness to change</h2>
+<div id="rtc-categorical-variables" class="section level2">
+<h2>RTC Categorical Variables</h2>
 <p>Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson’s chi-square analysis. What follows are the reported <span class="math inline">\(\chi^2\)</span> statistics, degrees of freedom, and p-values from each test.</p>
 <div id="readiness-to-change-diet" class="section level3">
 <h3>Readiness to change diet</h3>
@@ -2301,8 +2301,8 @@ Met exercise goal at least 50 percent
 </table>
 </div>
 </div>
-<div id="comparison-of-continuous-variables-by-readiness-to-change" class="section level2">
-<h2>Comparison of continuous variables by readiness to change</h2>
+<div id="rtc-continuous-variables" class="section level2">
+<h2>RTC Continuous Variables</h2>
 <p>The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.</p>
 <div id="readiness-to-change-diet-1" class="section level3">
 <h3>Readiness to change diet</h3>
@@ -2643,8 +2643,8 @@ Met exercise goal (percentage of sessions)
 </table>
 </div>
 </div>
-<div id="potential-interaction-in-readiness-to-change" class="section level2">
-<h2>Potential interaction in readiness to change</h2>
+<div id="potential-interaction-in-rtc" class="section level2">
+<h2>Potential interaction in RTC</h2>
 <pre class="r"><code>cross.both &lt;- chisq.test(
   df.processed$rtc_diet_groups,
   df.processed$rtc_exercise_groups,
@@ -2773,7 +2773,17 @@ Maintain
 <div id="simple" class="section level4">
 <h4>Simple</h4>
 <p>This model is called the simple model because it assumes no interactions and only examines the effect of response to the readiness to change survey on the outcome variables without considering interactions between the survey responses or the effect of other factors such as age.</p>
-<pre class="r"><code>model_log &lt;- function(x){
+<pre class="r"><code>logit_p &lt;- function(model){
+  p.value &lt;- 1 - pchisq(
+  model$null.deviance - model$deviance, 
+  model$df.null - model$df.residual
+  )
+  
+  return(p.value)
+  
+}
+
+model_log &lt;- function(x){
 
   model &lt;- glm(
     formula = 
@@ -2783,11 +2793,15 @@ Maintain
     data = df.processed, 
     family = binomial
     )
+
+  p.value &lt;- logit_p(model)
+
+  b &lt;- list(&quot;model&quot; = model, &quot;p&quot; = p.value)
+    
+  return(b)
   
-  return(
-    model
-    )
 }
+
 
 log_simple &lt;- lapply(binary_vars, model_log)</code></pre>
 <div id="lost-7-percent-during-core" class="section level5">
@@ -2795,10 +2809,10 @@ log_simple &lt;- lapply(binary_vars, model_log)</code></pre>
 <pre class="r"><code>mod &lt;- &quot;Lost 7 percent during core&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 216.3045852</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -2950,10 +2964,10 @@ rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 7 percent overall&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 219.0675692</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -3105,10 +3119,10 @@ rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 5 percent during core&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 235.4555405</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -3260,10 +3274,10 @@ rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 5 percent overall&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 234.9529095</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -3415,10 +3429,10 @@ rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Met fat goal&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 232.1732988</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -3570,10 +3584,10 @@ rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Met exercise goal at least 50 percent&quot;
 
 a &lt;- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_simple[[mod]]$aic</code></pre>
+aic &lt;- log_simple[[mod]]$model$aic</code></pre>
 <p>AIC: 241.91999</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -3738,9 +3752,11 @@ rtc_exercise_groupsMaintain
     family = binomial
     )
   
-  return(
-    model
-    )
+  p.value &lt;- logit_p(model)
+  
+  b &lt;- list(&quot;model&quot; = model, &quot;p&quot; = p.value)
+    
+  return(b)
 }
 
 log_complex &lt;- lapply(binary_vars, model_log)</code></pre>
@@ -3749,10 +3765,10 @@ log_complex &lt;- lapply(binary_vars, model_log)</code></pre>
 <pre class="r"><code>mod &lt;- &quot;Lost 7 percent during core&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 225.83985</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -4074,10 +4090,10 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 7 percent overall&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 229.752641</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -4399,10 +4415,10 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 5 percent during core&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 246.6170395</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -4724,10 +4740,10 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Lost 5 percent overall&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 246.7259222</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -5049,10 +5065,10 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Met fat goal&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 243.186868</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -5374,10 +5390,10 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 <pre class="r"><code>mod &lt;- &quot;Met exercise goal at least 50 percent&quot;
 
 a &lt;- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic &lt;- log_complex[[mod]]$aic</code></pre>
+aic &lt;- log_complex[[mod]]$model$aic</code></pre>
 <p>AIC: 245.0492569</p>
 <pre class="r"><code>knitr::kable(
   a
@@ -9052,43 +9068,43 @@ rtc_diet_groupsPreparation:rtc_exercise_groupsMaintain
 </div>
 <div id="predictive-model-summary" class="section level3">
 <h3>Predictive Model Summary</h3>
-<p>Overall, the models performed very poorly. The best logistic model had an AIC of 216.3045852 to predict whether an individual lost 7 percent of their body weight during the core sessions. This is quite high, ideally</p>
 <pre class="r"><code># assemble dataframe with outcome variables and model results
 
 performance &lt;- data.frame(
   &quot;Outcome&quot; = character(),
   &quot;Complexity&quot; = character(),
-  &quot;AIC&quot; = numeric()
+  &quot;AIC&quot; = numeric(),
+  &quot;p-value&quot; = numeric()
 )
 
 for (var in binary_vars){
-  
-  aic &lt;- log_simple[[var]]$aic
   
   performance &lt;- rbind(
     performance,
     data.frame(
       &quot;Outcome&quot; = var,
       &quot;Complexity&quot; = &quot;Simple&quot;,
-      &quot;AIC&quot; = aic
+      &quot;AIC&quot; = log_simple[[var]]$model$aic,
+      &quot;p-value&quot; = log_simple[[var]]$p
     )
   )
   
-  aic &lt;- log_complex[[var]]$aic
+  aic &lt;- log_complex[[var]]$model$aic
   
   performance &lt;- rbind(
     performance,
     data.frame(
       &quot;Outcome&quot; = var,
       &quot;Complexity&quot; = &quot;Complex&quot;,
-      &quot;AIC&quot; = aic
+      &quot;AIC&quot; = aic,
+      &quot;p-value&quot; = log_complex[[var]]$p
     )
   )
 }
 
 knitr::kable(
   performance,
-  caption = &quot;Logistic model performance when predicting outcome variables.&quot;
+  caption = &quot;Logistic model performance.&quot;
 ) %&gt;% 
   kableExtra::collapse_rows(
     columns = 1, valign = &quot;top&quot;
@@ -9096,7 +9112,7 @@ knitr::kable(
   kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-Logistic model performance when predicting outcome variables.
+Logistic model performance.
 </caption>
 <thead>
 <tr>
@@ -9108,6 +9124,9 @@ Complexity
 </th>
 <th style="text-align:right;">
 AIC
+</th>
+<th style="text-align:right;">
+p.value
 </th>
 </tr>
 </thead>
@@ -9122,6 +9141,9 @@ Simple
 <td style="text-align:right;">
 216.3046
 </td>
+<td style="text-align:right;">
+0.0299666
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9129,6 +9151,9 @@ Complex
 </td>
 <td style="text-align:right;">
 225.8399
+</td>
+<td style="text-align:right;">
+0.0804187
 </td>
 </tr>
 <tr>
@@ -9141,6 +9166,9 @@ Simple
 <td style="text-align:right;">
 219.0676
 </td>
+<td style="text-align:right;">
+0.0068908
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9148,6 +9176,9 @@ Complex
 </td>
 <td style="text-align:right;">
 229.7526
+</td>
+<td style="text-align:right;">
+0.0407772
 </td>
 </tr>
 <tr>
@@ -9160,6 +9191,9 @@ Simple
 <td style="text-align:right;">
 235.4555
 </td>
+<td style="text-align:right;">
+0.0211079
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9167,6 +9201,9 @@ Complex
 </td>
 <td style="text-align:right;">
 246.6170
+</td>
+<td style="text-align:right;">
+0.0955419
 </td>
 </tr>
 <tr>
@@ -9179,6 +9216,9 @@ Simple
 <td style="text-align:right;">
 234.9529
 </td>
+<td style="text-align:right;">
+0.0147718
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9186,6 +9226,9 @@ Complex
 </td>
 <td style="text-align:right;">
 246.7259
+</td>
+<td style="text-align:right;">
+0.0885526
 </td>
 </tr>
 <tr>
@@ -9198,6 +9241,9 @@ Simple
 <td style="text-align:right;">
 232.1733
 </td>
+<td style="text-align:right;">
+0.7521219
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9205,6 +9251,9 @@ Complex
 </td>
 <td style="text-align:right;">
 243.1869
+</td>
+<td style="text-align:right;">
+0.7142411
 </td>
 </tr>
 <tr>
@@ -9217,6 +9266,9 @@ Simple
 <td style="text-align:right;">
 241.9200
 </td>
+<td style="text-align:right;">
+0.4853034
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9224,6 +9276,9 @@ Complex
 </td>
 <td style="text-align:right;">
 245.0493
+</td>
+<td style="text-align:right;">
+0.1325798
 </td>
 </tr>
 </tbody>
@@ -9233,7 +9288,8 @@ Complex
 performance &lt;- data.frame(
   &quot;Outcome&quot; = character(),
   &quot;Complexity&quot; = character(),
-  &quot;R-squared&quot; = numeric()
+  &quot;R-squared&quot; = numeric(),
+  &quot;p-value&quot; = numeric()
 )
 
 for (var in cont_vars){
@@ -9245,7 +9301,14 @@ for (var in cont_vars){
     data.frame(
       &quot;Outcome&quot; = var,
       &quot;Complexity&quot; = &quot;Simple&quot;,
-      &quot;R-squared&quot; = aic
+      &quot;R-squared&quot; = aic,
+      &quot;p-value&quot; = pf(
+         summary(linear_simple[[var]])$fstatistic[1],
+         summary(linear_simple[[var]])$fstatistic[2],
+         summary(linear_simple[[var]])$fstatistic[3],
+         lower = FALSE
+      ),
+      row.names = NULL
     )
   )
   
@@ -9256,7 +9319,14 @@ for (var in cont_vars){
     data.frame(
       &quot;Outcome&quot; = var,
       &quot;Complexity&quot; = &quot;Complex&quot;,
-      &quot;R-squared&quot; = aic
+      &quot;R-squared&quot; = aic,
+      &quot;p-value&quot; = pf(
+         summary(linear_complex[[var]])$fstatistic[1],
+         summary(linear_complex[[var]])$fstatistic[2],
+         summary(linear_complex[[var]])$fstatistic[3],
+         lower = FALSE
+      ),
+      row.names = NULL
     )
   )
 }
@@ -9268,7 +9338,8 @@ knitr::kable(
   kableExtra::collapse_rows(
     columns = 1, valign = &quot;top&quot;
   ) %&gt;% 
-  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+  kableExtra::kable_styling(
+    bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
 Linear model performance when predicting outcome variables.
@@ -9284,6 +9355,9 @@ Complexity
 <th style="text-align:right;">
 R.squared
 </th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
@@ -9297,6 +9371,9 @@ Simple
 <td style="text-align:right;">
 0.0309551
 </td>
+<td style="text-align:right;">
+0.0828773
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9304,6 +9381,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0763674
+</td>
+<td style="text-align:right;">
+0.0262293
 </td>
 </tr>
 <tr>
@@ -9316,6 +9396,9 @@ Simple
 <td style="text-align:right;">
 0.0090401
 </td>
+<td style="text-align:right;">
+0.2794326
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9323,6 +9406,9 @@ Complex
 </td>
 <td style="text-align:right;">
 -0.0076426
+</td>
+<td style="text-align:right;">
+0.5483671
 </td>
 </tr>
 <tr>
@@ -9335,6 +9421,9 @@ Simple
 <td style="text-align:right;">
 0.0318798
 </td>
+<td style="text-align:right;">
+0.0783748
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9342,6 +9431,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0730046
+</td>
+<td style="text-align:right;">
+0.0308468
 </td>
 </tr>
 <tr>
@@ -9354,6 +9446,9 @@ Simple
 <td style="text-align:right;">
 0.0372311
 </td>
+<td style="text-align:right;">
+0.0563817
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9361,6 +9456,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0773493
+</td>
+<td style="text-align:right;">
+0.0250027
 </td>
 </tr>
 <tr>
@@ -9373,6 +9471,9 @@ Simple
 <td style="text-align:right;">
 0.0408654
 </td>
+<td style="text-align:right;">
+0.0448288
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9380,6 +9481,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0078087
+</td>
+<td style="text-align:right;">
+0.3751439
 </td>
 </tr>
 <tr>
@@ -9392,6 +9496,9 @@ Simple
 <td style="text-align:right;">
 0.0079209
 </td>
+<td style="text-align:right;">
+0.2953675
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9399,6 +9506,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0294260
+</td>
+<td style="text-align:right;">
+0.1901385
 </td>
 </tr>
 <tr>
@@ -9411,6 +9521,9 @@ Simple
 <td style="text-align:right;">
 -0.0040640
 </td>
+<td style="text-align:right;">
+0.5070632
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -9418,6 +9531,9 @@ Complex
 </td>
 <td style="text-align:right;">
 0.0287432
+</td>
+<td style="text-align:right;">
+0.1947428
 </td>
 </tr>
 </tbody>

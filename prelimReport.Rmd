@@ -1119,7 +1119,7 @@ knitr::kable(
 
 ### Predictive Model Summary
 
-Overall, the models performed very poorly. The best logistic model had an AIC of `r log_simple[["Lost 7 percent during core"]]$aic` to predict whether an individual lost 7 percent of their body weight during the core sessions. This is quite high, ideally 
+Overall the models perform poorly, however some perform better than the null hypothesis (see tables below).
 
 ```{r}
 # assemble dataframe with outcome variables and model results
@@ -1127,37 +1127,38 @@ Overall, the models performed very poorly. The best logistic model had an AIC of
 performance <- data.frame(
   "Outcome" = character(),
   "Complexity" = character(),
-  "AIC" = numeric()
+  "AIC" = numeric(),
+  "p-value" = numeric()
 )
 
 for (var in binary_vars){
-  
-  aic <- log_simple[[var]]$aic
   
   performance <- rbind(
     performance,
     data.frame(
       "Outcome" = var,
       "Complexity" = "Simple",
-      "AIC" = aic
+      "AIC" = log_simple[[var]]$model$aic,
+      "p-value" = log_simple[[var]]$p
     )
   )
   
-  aic <- log_complex[[var]]$aic
+  aic <- log_complex[[var]]$model$aic
   
   performance <- rbind(
     performance,
     data.frame(
       "Outcome" = var,
       "Complexity" = "Complex",
-      "AIC" = aic
+      "AIC" = aic,
+      "p-value" = log_complex[[var]]$p
     )
   )
 }
 
 knitr::kable(
   performance,
-  caption = "Logistic model performance when predicting outcome variables."
+  caption = "Logistic model performance."
 ) %>% 
   kableExtra::collapse_rows(
     columns = 1, valign = "top"
@@ -1169,7 +1170,8 @@ knitr::kable(
 performance <- data.frame(
   "Outcome" = character(),
   "Complexity" = character(),
-  "R-squared" = numeric()
+  "R-squared" = numeric(),
+  "p-value" = numeric()
 )
 
 for (var in cont_vars){
@@ -1181,7 +1183,14 @@ for (var in cont_vars){
     data.frame(
       "Outcome" = var,
       "Complexity" = "Simple",
-      "R-squared" = aic
+      "R-squared" = aic,
+      "p-value" = pf(
+         summary(linear_simple[[var]])$fstatistic[1],
+         summary(linear_simple[[var]])$fstatistic[2],
+         summary(linear_simple[[var]])$fstatistic[3],
+         lower = FALSE
+      ),
+      row.names = NULL
     )
   )
   
@@ -1192,7 +1201,14 @@ for (var in cont_vars){
     data.frame(
       "Outcome" = var,
       "Complexity" = "Complex",
-      "R-squared" = aic
+      "R-squared" = aic,
+      "p-value" = pf(
+         summary(linear_complex[[var]])$fstatistic[1],
+         summary(linear_complex[[var]])$fstatistic[2],
+         summary(linear_complex[[var]])$fstatistic[3],
+         lower = FALSE
+      ),
+      row.names = NULL
     )
   )
 }
@@ -1204,8 +1220,19 @@ knitr::kable(
   kableExtra::collapse_rows(
     columns = 1, valign = "top"
   ) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
+```
+
+The real question is - which model performs best? The simple or complex? What actually improve the model?
+
+```{r}
+# which performs best?
+anova(log_simple$`Lost 7 percent during core`$model, log_complex$`Lost 7 percent during core`$model, test = "Chisq")
+
+# which terms improve the model?
+anova(log_simple$`Lost 7 percent during core`$model, test = "Chisq")
 ```
 
 
@@ -1435,115 +1462,27 @@ df.processed %>%
 Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups.
 
 ```{r}
-df.processed <- df.processed %>% 
-  mutate(
-    rtc_diet_post_groups = ifelse(
-      rtc_diet == "preparation" | rtc_diet == "contemplative",
-      "preparation",
-        ifelse(
-          rtc_diet == "maintain" | rtc_diet == "action",
-          "action",
-          NA
-        )
-    ),
-    rtc_exercise_post_groups = ifelse(
-      rtc_exercise == "preparation" | rtc_exercise == "contemplative",
-      "preparation",
-        ifelse(
-          rtc_exercise == "maintain" | rtc_exercise == "action",
-          "action",
-          NA
-        )
-    ),
-  )
-
-model_log <- function(x){
-
-  model <- glm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_post_groups * 
-      rtc_exercise_post_groups +
-      Age + 
-      Gender +
-      BMI, 
-    data = df.processed, 
-    family = binomial
-    ) %>% 
-    summary()
-  
-  return(
-    as.data.frame(
-      model$coefficients
-      )
-    )
-}
-
-binary_list <- lapply(binary_vars, model_log)
-
-for (i in names(binary_list)){
-  
-  b <- binary_list[[i]]$`Pr(>|z|)`
-  
-  sig.p <- ifelse(
-    0.05 >=
-    min(
-      b[2:length(b)]
-    ),
-    TRUE,
-    FALSE
-  )
-  
-  if (sig.p == TRUE) {
-    print("==============================================")
-    print(i)
-    print(binary_list[[i]][c(1,4)])
-  }  
-}
-
-model_lm <- function(x){
-  
-  model <- lm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_post_groups * 
-      rtc_exercise_post_groups +
-      Age + 
-      Gender +
-      BMI, 
-    data = df.processed
-    ) %>% 
-    summary()
-  
-  a <- data.frame(
-        "Beta estimate" = model$coefficients[,1],
-        "p-value" = model$coefficients[,4]
-        )
-  
-  return(a)
-}
-
-continuous_list <- lapply(cont_vars, model_lm)
-
-for (i in names(continuous_list)){
-  
-  b <- continuous_list[[i]]$p.value
-  
-  sig.p <- ifelse(
-    0.05 >=
-    min(
-      b[2:length(b)]
-    ),
-    TRUE,
-    FALSE
-  )
-  
-  if (sig.p == TRUE) {
-    print("===============================================")
-    print(i)
-    print(continuous_list[[i]])
-  }  
-}
+# df.processed <- df.processed %>% 
+#   mutate(
+#     rtc_diet_groups = ifelse(
+#       rtc_diet == "preparation" | rtc_diet == "contemplative",
+#       "preparation",
+#         ifelse(
+#           rtc_diet == "maintain" | rtc_diet == "action",
+#           "action",
+#           NA
+#         )
+#     ),
+#     rtc_exercise_groups = ifelse(
+#       rtc_exercise == "preparation" | rtc_exercise == "contemplative",
+#       "preparation",
+#         ifelse(
+#           rtc_exercise == "maintain" | rtc_exercise == "action",
+#           "action",
+#           NA
+#         )
+#     ),
+#   )
 
 ```
 
