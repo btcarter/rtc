@@ -217,7 +217,7 @@ df.processed$rtc_exercise_groups <- factor(
 # Preliminary Analysis
 ## Descriptives
 
-### Comparison between included/excluded individuals
+### Included vs Excluded individuals
 
 ```{r message=FALSE, warning=FALSE}
 tab1 <- compareGroups::compareGroups(
@@ -233,7 +233,7 @@ compareGroups::createTable(
 
 ```
 
-### Summary statistics of included participants
+### Included only
 
 ```{r}
 df.processed <- df.processed %>% 
@@ -254,7 +254,7 @@ compareGroups::createTable(
 ```
 
 
-## Comparison of categorical variables by readiness to change
+## RTC Categorical Variables
 
 Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
@@ -363,7 +363,7 @@ knitr::kable(
 
 ```
 
-## Comparison of continuous variables by readiness to change
+## RTC Continuous Variables
 
 The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
@@ -477,7 +477,7 @@ knitr::kable(
 
 ```
 
-## Potential interaction in readiness to change
+## Potential interaction in RTC
 
 ```{r interactions}
 
@@ -531,6 +531,16 @@ This model is called the simple model because it assumes no interactions and onl
 
 ```{r}
 
+logit_p <- function(model){
+  p.value <- 1 - pchisq(
+  model$null.deviance - model$deviance, 
+  model$df.null - model$df.residual
+  )
+  
+  return(p.value)
+  
+}
+
 model_log <- function(x){
 
   model <- glm(
@@ -541,11 +551,15 @@ model_log <- function(x){
     data = df.processed, 
     family = binomial
     )
+
+  p.value <- logit_p(model)
+
+  b <- list("model" = model, "p" = p.value)
+    
+  return(b)
   
-  return(
-    model
-    )
 }
+
 
 log_simple <- lapply(binary_vars, model_log)
 
@@ -556,10 +570,10 @@ log_simple <- lapply(binary_vars, model_log)
 mod <- "Lost 7 percent during core"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -575,10 +589,10 @@ knitr::kable(
 mod <- "Lost 7 percent overall"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -595,10 +609,10 @@ knitr::kable(
 mod <- "Lost 5 percent during core"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -615,10 +629,10 @@ knitr::kable(
 mod <- "Lost 5 percent overall"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -635,10 +649,10 @@ knitr::kable(
 mod <- "Met fat goal"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -655,10 +669,10 @@ knitr::kable(
 mod <- "Met exercise goal at least 50 percent"
 
 a <- as.data.frame(
-  summary(log_simple[[mod]])$coefficients
+  summary(log_simple[[mod]]$model)$coefficients
 )
 
-aic <- log_simple[[mod]]$aic
+aic <- log_simple[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -689,9 +703,11 @@ model_log <- function(x){
     family = binomial
     )
   
-  return(
-    model
-    )
+  p.value <- logit_p(model)
+  
+  b <- list("model" = model, "p" = p.value)
+    
+  return(b)
 }
 
 log_complex <- lapply(binary_vars, model_log)
@@ -703,10 +719,10 @@ log_complex <- lapply(binary_vars, model_log)
 mod <- "Lost 7 percent during core"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -722,10 +738,10 @@ knitr::kable(
 mod <- "Lost 7 percent overall"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -742,10 +758,10 @@ knitr::kable(
 mod <- "Lost 5 percent during core"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -762,10 +778,10 @@ knitr::kable(
 mod <- "Lost 5 percent overall"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -782,10 +798,10 @@ knitr::kable(
 mod <- "Met fat goal"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
@@ -802,10 +818,10 @@ knitr::kable(
 mod <- "Met exercise goal at least 50 percent"
 
 a <- as.data.frame(
-  summary(log_complex[[mod]])$coefficients
+  summary(log_complex[[mod]]$model)$coefficients
 )
 
-aic <- log_complex[[mod]]$aic
+aic <- log_complex[[mod]]$model$aic
 ```
 
 AIC: `r {aic}`
