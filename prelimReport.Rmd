@@ -17,6 +17,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 library(dplyr)
+library(tidyr)
 library(gmodels)
 library(ggplot2)
 # paths V:\Depts\CtrTransRsch\Dept Private\CTR Staff\PROJECT - Readiness to change manuscript\DATA
@@ -214,7 +215,7 @@ df.processed$rtc_exercise_groups <- factor(
 
 ```
 
-# Preliminary Analysis
+# Primary Analysis
 ## Descriptives
 
 ### Included vs Excluded individuals
@@ -258,7 +259,7 @@ compareGroups::createTable(
 
 Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
-### Readiness to change diet
+### Diet
 
 ```{r categoricals, message=FALSE,warning=FALSE,echo=FALSE}
 
@@ -313,6 +314,37 @@ knitr::kable(
       )
     )
 
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(
+      names(
+        binary_vars
+      )
+    )
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_diet_groups,
+      fill = Val
+    )
+  ) +
+  geom_bar(
+    position = "fill"
+  ) + 
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  ) +
+  labs(
+    title = "Which Groups Met Their Goals?",
+    x = "Readiness to Change Diet",
+    y = "Proportion of Group",
+    fill = "Met Goal"
+  ) +
+  facet_wrap(Outcome~.)
+
 ```
 
 ### Readiness to change exercise
@@ -360,6 +392,37 @@ knitr::kable(
       "responsive"
       )
     )
+
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(
+      names(
+        binary_vars
+      )
+    )
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_exercise_groups,
+      fill = Val
+    )
+  ) +
+  geom_bar(
+    position = "fill"
+  ) + 
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  ) +
+  labs(
+    title = "Which Groups Met Their Goals?",
+    x = "Readiness to Change Exercise",
+    y = "Proportion of Group",
+    fill = "Met Goal"
+  ) +
+  facet_wrap(Outcome~.)
 
 ```
 
