@@ -345,6 +345,35 @@ df.processed %>%
   ) +
   facet_wrap(Outcome~.)
 
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(
+      names(
+        binary_vars
+      )
+    )
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_diet_groups,
+      fill = Val
+    )
+  ) +
+  geom_bar() + 
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  ) +
+  labs(
+    title = "Which Groups Met Their Goals?",
+    x = "Readiness to Change Diet",
+    y = "Count",
+    fill = "Met Goal"
+  ) +
+  facet_wrap(Outcome~.)
+
 ```
 
 ### Readiness to change exercise
@@ -424,6 +453,35 @@ df.processed %>%
   ) +
   facet_wrap(Outcome~.)
 
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(
+      names(
+        binary_vars
+      )
+    )
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_exercise_groups,
+      fill = Val
+    )
+  ) +
+  geom_bar() + 
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  ) +
+  labs(
+    title = "Which Groups Met Their Goals?",
+    x = "Readiness to Change Exercise",
+    y = "Count",
+    fill = "Met Goal"
+  ) +
+  facet_wrap(Outcome~.)
+
 ```
 
 ## RTC Continuous Variables
@@ -496,6 +554,30 @@ knitr::kable(
       )
     )
 
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(names(cont_vars))
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_diet_groups,
+      Val
+    )
+  ) +
+  geom_boxplot() +
+  facet_wrap(Outcome~., ncol = 2, scales = "free") +
+  theme_classic() +
+  labs(
+    title = "Who Met Their Goal?",
+    x = "Readiness to Change Diet",
+    y = "Measure"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+
 ```
 
 ### Readiness to change exercise
@@ -537,6 +619,59 @@ knitr::kable(
       "responsive"
       )
     )
+
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(names(cont_vars))
+  ) %>% 
+  ggplot(
+    aes(
+      rtc_exercise_groups,
+      Val
+    )
+  ) +
+  geom_boxplot() +
+  facet_wrap(Outcome~., ncol = 4, scales = "free") +
+  theme_classic() +
+  labs(
+    title = "Who Met Their Goal?",
+    x = "Readiness to Change Exercise",
+    y = "Measure"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(names(binary_vars))
+  ) %>% 
+  ggplot(
+    aes(
+      Outcome,
+      fill = Val
+    )
+  ) +
+  geom_bar(
+    position = "fill"
+  ) +
+  facet_grid(
+    rtc_exercise_groups ~ rtc_diet_groups,
+    labeller = label_both
+  ) +
+  theme_classic() +
+  labs(
+    title = "Readiness to Change Success",
+    x = "Goal Achieved?",
+    y = "Count"
+  )  +
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
 
 ```
 
