@@ -376,7 +376,7 @@ df.processed %>%
 
 ```
 
-### Readiness to change exercise
+### Exercise
 
 ```{r}
 
@@ -488,7 +488,7 @@ df.processed %>%
 
 The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
-### Readiness to change diet
+### Diet
 
 ```{r continuous, message=FALSE}
 
@@ -567,7 +567,7 @@ df.processed %>%
     )
   ) +
   geom_boxplot() +
-  facet_wrap(Outcome~., ncol = 2, scales = "free") +
+  facet_wrap(Outcome~., ncol = 4, scales = "free") +
   theme_classic() +
   labs(
     title = "Who Met Their Goal?",
@@ -580,7 +580,7 @@ df.processed %>%
 
 ```
 
-### Readiness to change exercise
+### Exercise
 
 ```{r continuous2}
 
@@ -698,7 +698,7 @@ CV <- cv.test(
 
 ```
 
-Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a relatively large association between readiness to change diet and readiness to change exercise. This association is incorporated into the final predictive models as an interaction.
+Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a relatively large association between readiness to change diet and readiness to change exercise. This association can be treated in one of two ways: it can be used to simplify the predictive model (i.e. because the responses to the questions are correlated we need only consider the responses to one of the questions and can ignore the other) or this can be included as an interaction in a multivariate model.
 
 ```{r}
 knitr::kable(
@@ -715,13 +715,15 @@ knitr::kable(
 
 ## Predictive models for success
 
-Statistical models were created in an attempt to predict outcomes based on patient demographics and baseline response to the readiness to change survey questions. Two general models were used to predict success in the program - a simple model incorporating only the answers on the readiness to change survey and a complex model incorporating both an interaction between the answers on the survey and the effects of age, gender, and BMI. These models were employed in a logistic fashion when predicting nominal outcomes (e.g. did they lose 7% of their body weight during the program) and in a linear model when predicting a continuous outcome (e.g. how much of their body weight did they lose during the program).
+Now we can revisit the models from the preliminary analysis. Given the interaction in readiness to change survey responses, there are essentially three different forms our model can take: (1) a model with a single term representing the response to only one of the readiness to change questions, (2) a model with two terms using both readiness to change questions and their interaction, (3) a model using the readiness to change survey and demographic factors.
 
-These predictive models were evaluated for each of the outcome measures. The results are organized by model type (logistic or linear, simple or complex) and outcome variable predicted by the model. $\beta$ estimates and *p*-values are presented in tables. Logistic model performance is quantified using *Akaike information criteria* (AIC). Linear model performance is quantified using an adjusted-R$^2$.
+Several tests will be conducted to help us choose the appropriate model for each of the outcome variables. For binary outcome variables, logistic models will be constructed. Goodness of fit will then be examined for each model against the null hypothesis using analysis of deviance. Simpler models will also be compared against more complex models using analysis of deviance. This will enable us to quantify the difference between models in terms of goodness of fit and the odds these differences are due to chance.
+
+After the models are compared, $\beta$ values for model coefficients and *p*-values are presented. Logistic model performance is also quantified using an *Akaike information criteria* (AIC) for the logistic models, and R$^2$ for the linear models.
 
 This is followed by a discussion summarizing the results.
 
-### Logistic model
+### Binary outcomes
 
 #### Simple
 
@@ -739,27 +741,50 @@ logit_p <- function(model){
   
 }
 
-model_log <- function(x){
-
+model_log <- function(fmla){
   model <- glm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups, 
-    data = df.processed, 
+    formula = fmla,
+    data = df.processed,
     family = binomial
-    )
+  )
+  
+  return(model)
+}
 
-  p.value <- logit_p(model)
+model_all <- function(x){
 
-  b <- list("model" = model, "p" = p.value)
+
+  model.diet <- model_log(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", sep = "")
+  )
+  model.diet$p.value <- logit_p(model.diet)
+  
+  model.exercise <- model_log(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_exercise_groups", sep = "")
+  )
+  model.exercise$p.value <- logit_p(model.exercise)
+  
+  
+  model.interaction <- model_log(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", " + ", "rtc_exercise_groups", sep = "")
+  )
+  
+  model.interaction$p.value <- logit_p(model.interaction)
+
+  b <- list(
+    diet = model.diet,
+    exercise = model.exercise,
+    interaction = model.interaction
+  )
     
   return(b)
-  
 }
 
 
-log_simple <- lapply(binary_vars, model_log)
+log_models <- lapply(binary_vars, model_all)
 
 ```
 
@@ -881,157 +906,8 @@ knitr::kable(
 ) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-#### Complex
 
-The complex model examines the effect of readiness to change and also includes an interaction between responses on the readiness to change survey, as well as potential effects of age, gender and BMI.
-
-```{r}
-
-model_log <- function(x){
-
-  model <- glm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups * 
-      rtc_exercise_groups +
-      Age + 
-      Gender +
-      BMI, 
-    data = df.processed, 
-    family = binomial
-    )
-  
-  p.value <- logit_p(model)
-  
-  b <- list("model" = model, "p" = p.value)
-    
-  return(b)
-}
-
-log_complex <- lapply(binary_vars, model_log)
-
-```
-
-##### Lost 7 percent during core
-```{r}
-mod <- "Lost 7 percent during core"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Lost 7 percent overall
-```{r}
-mod <- "Lost 7 percent overall"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Lost 5 percent during core
-
-```{r}
-mod <- "Lost 5 percent during core"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Lost 5 percent overall
-
-```{r}
-mod <- "Lost 5 percent overall"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met fat goal
-
-```{r}
-mod <- "Met fat goal"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met exercise goal at least 50 percent
-
-```{r}
-mod <- "Met exercise goal at least 50 percent"
-
-a <- as.data.frame(
-  summary(log_complex[[mod]]$model)$coefficients
-)
-
-aic <- log_complex[[mod]]$model$aic
-```
-
-AIC: `r {aic}`
-
-```{r}
-knitr::kable(
-  a
-) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-
-### Linear Model
+### Continuous outcomes
 
 #### Simple
 
