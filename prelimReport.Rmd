@@ -796,13 +796,73 @@ log_models <- lapply(binary_vars, model_all)
 ```{r}
 for (mod in names(log_models)){
   # print name
-  print("==================================")
-  print(mod)
-  # print deviance tables to choose models
-  for (tab in names(log_models[[mod]]$ANOD)){
-    print(log_models[[mod]]$ANOD[[tab]])
+  print("=========================================================")
+  print(
+    paste(
+      "Outcome:",
+      mod,
+      sep = ""
+    )
+  )
+  print("=========================================================")
+
+  # print individual model coefficients and overall model p-values
+  model_list <- c("diet", "exercise", "interaction")
+  
+  for (thing in model_list){
+    
+    print(
+      paste(
+        "Predictor:",
+        " ",
+        thing,
+        sep = ""
+      )
+    )
+    
+    print(
+      paste(
+        "AIC: ",
+        log_models[[mod]][[thing]]$aic,
+        ", ",
+        "p-value: ",
+        log_models[[mod]][[thing]]$p.value,
+        sep = "" 
+      )
+    )
+    
+    print(
+      as.data.frame(
+        summary(log_models[[mod]][[thing]])$coefficients[,c(1,4)]
+      )  
+    )
+    
+    print("-----------------------------------------------------")
+    
+
   }
-  print("==================================")
+  
+  
+  # print deviance tables to choose models
+  
+  print("=========================================================")
+  
+  print("Model comparisons via analysis of deviance")
+  
+  for (tab in names(log_models[[mod]]$ANOD)){
+    print(
+      paste(
+        "Comparison: ",
+        tab,
+        sep = ""
+      )
+    )
+    print(
+        as.data.frame(log_models[[mod]]$ANOD[[tab]])
+    )
+    print("-----------------------------------------------------")
+  }
+  
 }
 ```
 
@@ -1099,46 +1159,46 @@ Overall the models perform poorly, however some perform better than the null hyp
 ```{r}
 # assemble dataframe with outcome variables and model results
 
-performance <- data.frame(
-  "Outcome" = character(),
-  "Complexity" = character(),
-  "AIC" = numeric(),
-  "p-value" = numeric()
-)
-
-for (var in binary_vars){
-  
-  performance <- rbind(
-    performance,
-    data.frame(
-      "Outcome" = var,
-      "Complexity" = "Simple",
-      "AIC" = log_simple[[var]]$model$aic,
-      "p-value" = log_simple[[var]]$p
-    )
-  )
-  
-  aic <- log_complex[[var]]$model$aic
-  
-  performance <- rbind(
-    performance,
-    data.frame(
-      "Outcome" = var,
-      "Complexity" = "Complex",
-      "AIC" = aic,
-      "p-value" = log_complex[[var]]$p
-    )
-  )
-}
-
-knitr::kable(
-  performance,
-  caption = "Logistic model performance."
-) %>% 
-  kableExtra::collapse_rows(
-    columns = 1, valign = "top"
-  ) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+# performance <- data.frame(
+#   "Outcome" = character(),
+#   "Complexity" = character(),
+#   "AIC" = numeric(),
+#   "p-value" = numeric()
+# )
+# 
+# for (var in binary_vars){
+#   
+#   performance <- rbind(
+#     performance,
+#     data.frame(
+#       "Outcome" = var,
+#       "Complexity" = "Simple",
+#       "AIC" = log_simple[[var]]$model$aic,
+#       "p-value" = log_simple[[var]]$p
+#     )
+#   )
+#   
+#   aic <- log_complex[[var]]$model$aic
+#   
+#   performance <- rbind(
+#     performance,
+#     data.frame(
+#       "Outcome" = var,
+#       "Complexity" = "Complex",
+#       "AIC" = aic,
+#       "p-value" = log_complex[[var]]$p
+#     )
+#   )
+# }
+# 
+# knitr::kable(
+#   performance,
+#   caption = "Logistic model performance."
+# ) %>% 
+#   kableExtra::collapse_rows(
+#     columns = 1, valign = "top"
+#   ) %>% 
+#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 # linear model performance summary
 
@@ -1198,16 +1258,6 @@ knitr::kable(
   kableExtra::kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
-```
-
-The real question is - which model performs best? The simple or complex? What actually improve the model?
-
-```{r}
-# which performs best?
-anova(log_simple$`Lost 7 percent during core`$model, log_complex$`Lost 7 percent during core`$model, test = "Chisq")
-
-# which terms improve the model?
-anova(log_simple$`Lost 7 percent during core`$model, test = "Chisq")
 ```
 
 
