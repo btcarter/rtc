@@ -715,17 +715,15 @@ knitr::kable(
 
 ## Predictive models for success
 
-Now we can revisit the models from the preliminary analysis. Given the interaction in readiness to change survey responses, there are essentially three different forms our model can take: (1) a model with a single term representing the response to only one of the readiness to change questions, (2) a model with two terms using both readiness to change questions and their interaction, (3) a model using the readiness to change survey and demographic factors.
+Now we can revisit the models from the first analysis. Given the interaction in readiness to change survey responses, there are essentially three different forms our model can take: (1) a model with a single term representing the response to only one of the readiness to change questions, (2) a model with two terms using both readiness to change questions and their interaction, (3) a model using the readiness to change survey and demographic factors.
 
-Several tests will be conducted to help us choose the appropriate model for each of the outcome variables. For binary outcome variables, logistic models will be constructed. Goodness of fit will then be examined for each model against the null hypothesis using analysis of deviance. Simpler models will also be compared against more complex models using analysis of deviance. This will enable us to quantify the difference between models in terms of goodness of fit and the odds these differences are due to chance.
+Several tests will be conducted to help us choose the appropriate model for each of the outcome variables. For binary outcomes, logistic models will be constructed. Goodness of fit will then be examined for each model against the null hypothesis using analysis of deviance. Simpler models will also be compared against more complex models using analysis of deviance. Linear models will be constructed for continuous outcomes. Goodness of fit for each model will then be assessed via an adjusted R$^2$. Simpler models will then be compared to more complex models via an analysis of variance.
 
 After the models are compared, $\beta$ values for model coefficients and *p*-values are presented. Logistic model performance is also quantified using an *Akaike information criteria* (AIC) for the logistic models, and R$^2$ for the linear models.
 
 This is followed by a discussion summarizing the results.
 
-### Binary outcomes
-
-```{r}
+```{r logisticModels}
 
 logit_p <- function(model){
   p.value <- 1 - pchisq(
@@ -793,7 +791,7 @@ log_models <- lapply(binary_vars, model_all)
 
 ```
 
-```{r}
+```{r logisticOutput}
 for (mod in names(log_models)){
   # print name
   print("=========================================================")
@@ -866,293 +864,79 @@ for (mod in names(log_models)){
 }
 ```
 
+```{r linearModels}
 
-
-### Continuous outcomes
-
-#### Simple
-
-```{r}
-
-model_lm <- function(x){
-  
+model_lm <- function(fmla){
   model <- lm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups + 
-      rtc_exercise_groups, 
+    formula = fmla,
     data = df.processed
-    )
+  )
+  
+  return(model)
 }
 
-linear_simple <- lapply(cont_vars, model_lm)
-
-```
-
-##### Core attendance
-
-```{r}
-a <- "Core attendance"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Post-core attendance
+model_all <- function(x){
 
 
-```{r}
-a <- "Post-core attendance"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Overall attendance
-
-```{r}
-a <- "Overall attendance"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Maximum weight lost
-
-```{r}
-a <- "Maximum weight lost"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Percent weight lost
-
-```{r}
-a <- "Percent weight lost"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met fat goal (percentage of sessions)
-
-```{r}
-a <- "Met fat goal (percentage of sessions)"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met exercise goal (percentage of sessions)
-
-```{r}
-a <- "Met exercise goal (percentage of sessions)"
-r <- summary(linear_simple[[a]])$adj.r.squared
-b <- summary(linear_simple[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-#### Complex
-
-```{r}
-
-model_lm <- function(x){
+  model.diet <- model_lm(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", sep = "")
+  )
+  model.diet$p.value <- pf(
+          summary(model.diet)$fstatistic[1],
+          summary(model.diet)$fstatistic[2],
+          summary(model.diet)$fstatistic[3],
+          lower = FALSE
+       )
   
-  model <- lm(
-    formula = 
-      df.processed[[x]] ~ 
-      rtc_diet_groups * 
-      rtc_exercise_groups +
-      Age +
-      Gender +
-      BMI, 
-    data = df.processed
-    )
+  model.exercise <- model_lm(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_exercise_groups", sep = "")
+  )
+  model.exercise$p.value <- pf(
+          summary(model.exercise)$fstatistic[1],
+          summary(model.exercise)$fstatistic[2],
+          summary(model.exercise)$fstatistic[3],
+          lower = FALSE
+       )
+  
+  
+  model.interaction <- model_lm(
+    paste("df.processed[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", " * ", "rtc_exercise_groups", sep = "")
+  )
+  model.interaction$p.value <- pf(
+          summary(model.interaction)$fstatistic[1],
+          summary(model.interaction)$fstatistic[2],
+          summary(model.interaction)$fstatistic[3],
+          lower = FALSE
+       )
+
+  deviance <- list(
+    "diet" = anova(model.diet),
+    "exercise" = anova(model.exercise),
+    "interaction" = anova(model.interaction),
+    "dietVinteraction" = anova(model.diet, model.interaction),
+    "exerciseVinteraction" = anova(model.exercise, model.interaction)
+  )
+  
+  b <- list(
+    "diet" = model.diet,
+    "exercise" = model.exercise,
+    "interaction" = model.interaction,
+    "ANOVA" = deviance
+  )
+    
+  return(b)
 }
 
-linear_complex <- lapply(cont_vars, model_lm)
+linear_models <- lapply(cont_vars, model_all)
 
 ```
-
-##### Core attendance
-
-```{r}
-a <- "Core attendance"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Post-core attendance
+ 
 
 
-```{r}
-a <- "Post-core attendance"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Overall attendance
-
-```{r}
-a <- "Overall attendance"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Maximum weight lost
-
-```{r}
-a <- "Maximum weight lost"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Percent weight lost
-
-```{r}
-a <- "Percent weight lost"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met fat goal (percentage of sessions)
-
-```{r}
-a <- "Met fat goal (percentage of sessions)"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-##### Met exercise goal (percentage of sessions)
-
-```{r}
-a <- "Met exercise goal (percentage of sessions)"
-r <- summary(linear_complex[[a]])$adj.r.squared
-b <- summary(linear_complex[[a]])$coefficients
-```
-
-R$^2$: `r r`
-
-```{r}
-knitr::kable(
-  b
-) %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
-
-
-### Predictive Model Summary
+### Choosing a Model
 
 Overall the models perform poorly, however some perform better than the null hypothesis (see tables below).
 
@@ -1200,63 +984,63 @@ Overall the models perform poorly, however some perform better than the null hyp
 #   ) %>% 
 #   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
-# linear model performance summary
-
-performance <- data.frame(
-  "Outcome" = character(),
-  "Complexity" = character(),
-  "R-squared" = numeric(),
-  "p-value" = numeric()
-)
-
-for (var in cont_vars){
-  
-  aic <- summary(linear_simple[[var]])$adj.r.squared
-  
-  performance <- rbind(
-    performance,
-    data.frame(
-      "Outcome" = var,
-      "Complexity" = "Simple",
-      "R-squared" = aic,
-      "p-value" = pf(
-         summary(linear_simple[[var]])$fstatistic[1],
-         summary(linear_simple[[var]])$fstatistic[2],
-         summary(linear_simple[[var]])$fstatistic[3],
-         lower = FALSE
-      ),
-      row.names = NULL
-    )
-  )
-  
-  aic <- summary(linear_complex[[var]])$adj.r.squared
-  
-  performance <- rbind(
-    performance,
-    data.frame(
-      "Outcome" = var,
-      "Complexity" = "Complex",
-      "R-squared" = aic,
-      "p-value" = pf(
-         summary(linear_complex[[var]])$fstatistic[1],
-         summary(linear_complex[[var]])$fstatistic[2],
-         summary(linear_complex[[var]])$fstatistic[3],
-         lower = FALSE
-      ),
-      row.names = NULL
-    )
-  )
-}
-
-knitr::kable(
-  performance,
-  caption = "Linear model performance when predicting outcome variables."
-) %>% 
-  kableExtra::collapse_rows(
-    columns = 1, valign = "top"
-  ) %>% 
-  kableExtra::kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+# # linear model performance summary
+# 
+# performance <- data.frame(
+#   "Outcome" = character(),
+#   "Complexity" = character(),
+#   "R-squared" = numeric(),
+#   "p-value" = numeric()
+# )
+# 
+# for (var in cont_vars){
+#   
+#   aic <- summary(linear_simple[[var]])$adj.r.squared
+#   
+#   performance <- rbind(
+#     performance,
+#     data.frame(
+#       "Outcome" = var,
+#       "Complexity" = "Simple",
+#       "R-squared" = aic,
+#       "p-value" = pf(
+#          summary(linear_simple[[var]])$fstatistic[1],
+#          summary(linear_simple[[var]])$fstatistic[2],
+#          summary(linear_simple[[var]])$fstatistic[3],
+#          lower = FALSE
+#       ),
+#       row.names = NULL
+#     )
+#   )
+#   
+#   aic <- summary(linear_complex[[var]])$adj.r.squared
+#   
+#   performance <- rbind(
+#     performance,
+#     data.frame(
+#       "Outcome" = var,
+#       "Complexity" = "Complex",
+#       "R-squared" = aic,
+#       "p-value" = pf(
+#          summary(linear_complex[[var]])$fstatistic[1],
+#          summary(linear_complex[[var]])$fstatistic[2],
+#          summary(linear_complex[[var]])$fstatistic[3],
+#          lower = FALSE
+#       ),
+#       row.names = NULL
+#     )
+#   )
+# }
+# 
+# knitr::kable(
+#   performance,
+#   caption = "Linear model performance when predicting outcome variables."
+# ) %>% 
+#   kableExtra::collapse_rows(
+#     columns = 1, valign = "top"
+#   ) %>% 
+#   kableExtra::kable_styling(
+#     bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 ```
 
