@@ -644,35 +644,6 @@ df.processed %>%
     axis.text.x = element_text(angle = 90)
   )
 
-df.processed %>% 
-  gather(
-    key = "Outcome",
-    value = "Val",
-    c(names(binary_vars))
-  ) %>% 
-  ggplot(
-    aes(
-      Outcome,
-      fill = Val
-    )
-  ) +
-  geom_bar(
-    position = "fill"
-  ) +
-  facet_grid(
-    rtc_exercise_groups ~ rtc_diet_groups,
-    labeller = label_both
-  ) +
-  theme_classic() +
-  labs(
-    title = "Readiness to Change Success",
-    x = "Goal Achieved?",
-    y = "Count"
-  )  +
-  theme(
-    axis.text.x = element_text(angle = 90)
-  )
-
 ```
 
 ## Potential interaction in RTC
@@ -700,28 +671,69 @@ CV <- cv.test(
 
 Responses to the readiness to change questions are probably related correlated. This would make sense as individuals who are willing to change their diet are probably more likely to change their exercise as well. The converse is probably also true. Cramer's V between both questions is `r CV`. This indicates there is a relatively large association between readiness to change diet and readiness to change exercise. This association can be treated in one of two ways: it can be used to simplify the predictive model (i.e. because the responses to the questions are correlated we need only consider the responses to one of the questions and can ignore the other) or this can be included as an interaction in a multivariate model.
 
-```{r}
-knitr::kable(
-  as.data.frame(cross.both$observed) %>% tidyr::spread(key = Var2, value = Freq)) %>% 
+```{r, fig.height=7}
+
+coi <- as.data.frame(
+  cross.both$observed
+  ) %>% 
+  tidyr::spread(
+    key = df.processed.rtc_diet_groups, 
+    value = Freq
+    ) %>% 
+  rename(
+    "Readiness to Change Exercise" = Var2
+  )
+
+knitr::kable(coi) %>% 
   kableExtra::kable_styling(
     bootstrap_options = c(
       "striped", 
       "hover", 
       "responsive"
       )
+    ) %>% 
+  kableExtra::add_header_above(
+    c(" ", "Readiness to Change Diet" = 4)
     )
+
+df.processed %>% 
+  gather(
+    key = "Outcome",
+    value = "Val",
+    c(names(binary_vars))
+  ) %>% 
+  ggplot(
+    aes(
+      Outcome,
+      fill = Val
+    )
+  ) +
+  geom_bar(
+    position = "fill"
+  ) +
+  facet_grid(
+    rtc_exercise_groups ~ rtc_diet_groups,
+    labeller = label_both
+  ) +
+  theme_classic() +
+  labs(
+    title = "Readiness to Change Success",
+    x = "Goal",
+    y = "Proportion",
+    fill = "Met Goal"
+  )  +
+  theme(
+    axis.text.x = element_text(angle = 90),
+    strip.text = element_text(size = 5)
+  )
 
 ```
 
 ## Predictive models for success
 
-Now we can revisit the models from the first analysis. Given the interaction in readiness to change survey responses, there are essentially three different forms our model can take: (1) a model with a single term representing the response to only one of the readiness to change questions, (2) a model with two terms using both readiness to change questions and their interaction, (3) a model using the readiness to change survey and demographic factors.
+Now we can revisit the models from the first analysis. Given the potential interaction in readiness to change survey responses, there are essentially two different forms our model can take: (1) a model with a single term representing the response to only one of the readiness to change questions, (2) a model with two terms using both readiness to change questions and their interaction.
 
-Several tests will be conducted to help us choose the appropriate model for each of the outcome variables. For binary outcomes, logistic models will be constructed. Goodness of fit will then be examined for each model against the null hypothesis using analysis of deviance. Simpler models will also be compared against more complex models using analysis of deviance. Linear models will be constructed for continuous outcomes. Goodness of fit for each model will then be assessed via an adjusted R$^2$. Simpler models will then be compared to more complex models via an analysis of variance.
-
-After the models are compared, $\beta$ values for model coefficients and *p*-values are presented. Logistic model performance is also quantified using an *Akaike information criteria* (AIC) for the logistic models, and R$^2$ for the linear models.
-
-This is followed by a discussion summarizing the results.
+Several tests have been conducted to help us choose the appropriate model for each of the outcome variables. For binary outcomes, logistic models will be constructed. Goodness of fit will then be examined for each model using an *Akaike information criteria* (AIC). Simpler models will also be compared against more complex models using analysis of deviance. Linear models will be constructed for continuous outcomes. Goodness of fit for each model will then be assessed via an adjusted R$^2$. Simpler models will then be compared to more complex models via an analysis of variance.
 
 ```{r logisticModels}
 
@@ -772,7 +784,6 @@ model_all <- function(x){
     "diet" = anova(model.diet, test = 'Chisq'),
     "exercise" = anova(model.exercise, test = 'Chisq'),
     "interaction" = anova(model.interaction, test = 'Chisq'),
-    "dietVexercise" = anova(model.diet, model.exercise, test = 'Chisq'),
     "dietVinteraction" = anova(model.diet, model.interaction, test = 'Chisq'),
     "exerciseVinteraction" = anova(model.exercise, model.interaction, test = 'Chisq')
   )
@@ -789,79 +800,6 @@ model_all <- function(x){
 
 log_models <- lapply(binary_vars, model_all)
 
-```
-
-```{r logisticOutput}
-for (mod in names(log_models)){
-  # print name
-  print("=========================================================")
-  print(
-    paste(
-      "Outcome:",
-      mod,
-      sep = ""
-    )
-  )
-  print("=========================================================")
-
-  # print individual model coefficients and overall model p-values
-  model_list <- c("diet", "exercise", "interaction")
-  
-  for (thing in model_list){
-    
-    print(
-      paste(
-        "Predictor:",
-        " ",
-        thing,
-        sep = ""
-      )
-    )
-    
-    print(
-      paste(
-        "AIC: ",
-        log_models[[mod]][[thing]]$aic,
-        ", ",
-        "p-value: ",
-        log_models[[mod]][[thing]]$p.value,
-        sep = "" 
-      )
-    )
-    
-    print(
-      as.data.frame(
-        summary(log_models[[mod]][[thing]])$coefficients[,c(1,4)]
-      )  
-    )
-    
-    print("-----------------------------------------------------")
-    
-
-  }
-  
-  
-  # print deviance tables to choose models
-  
-  print("=========================================================")
-  
-  print("Model comparisons via analysis of deviance")
-  
-  for (tab in names(log_models[[mod]]$ANOD)){
-    print(
-      paste(
-        "Comparison: ",
-        tab,
-        sep = ""
-      )
-    )
-    print(
-        as.data.frame(log_models[[mod]]$ANOD[[tab]])
-    )
-    print("-----------------------------------------------------")
-  }
-  
-}
 ```
 
 ```{r linearModels}
@@ -933,56 +871,40 @@ model_all <- function(x){
 linear_models <- lapply(cont_vars, model_all)
 
 ```
- 
 
 
-### Choosing a Model
+### Binary Outcomes
 
-Overall the models perform poorly, however some perform better than the null hypothesis (see tables below).
+#### Lost 7 percent during core
+
+Whether or not a participant was going to lose 7 percent of their body weight during the program could be predicted using either by their readiness to change diet (*p* = `r log_models[["Lost 7 percent during core"]]$diet$p.value`), or their readiness to change exercise (*p* = `r log_models[["Lost 7 percent during core"]]$exercise$p.value`). The interaction did not pass the *a priori* thresholds for significance (*p* = `r log_models[["Lost 7 percent during core"]]$interaction$p.value`).
+
+When comparing the AIC for both models, readiness to change diet (deviance = `r log_models[["Lost 7 percent during core"]]$diet$deviance`; AIC = `r log_models[["Lost 7 percent during core"]]$diet$aic`) is a better predictor of the outcome than readiness to change exercise (deviance = `r log_models[["Lost 7 percent during core"]]$exercise$deviance;` AIC = `r log_models[["Lost 7 percent during core"]]$exercise$aic`).
+
+#### Lost 7 percent overall   
+
+Diet or exercise can be used to predict success either singly (Diet: *p* = `r log_models[["Lost 7 percent overall"]]$diet$p.value`; Exercise: *p* = `r log_models[["Lost 7 percent overall"]]$exercise$p.value`) or as an interaction (`r log_models[["Lost 7 percent overall"]]$interaction$p.value`). Of the three, the interactive model has the smallest deviance (`r log_models[[
+"Lost 7 percent overall"]]$interaction$deviance`).
+
+#### Lost 5 percent during core
+
+Only readiness to change diet is able to predict a loss of 5% of body weight (*p* = `r log_models[["Lost 5 percent during core"]]$diet$p.value`). Readiness to change exercise or an interaction between teh two do not meet *a priori* threshold for significance.
+
+#### Lost 5 percent overall  
+
+The readiness to change diet overall is also associated with a loss of 5% of body mass (*p* = `r log_models[["Lost 5 percent overall"]]$diet$p.value`), as is the model including an interaction with readiness to change exercise (*p* = `r log_models[["Lost 5 percent overall"]]$interaction$p.value`). Of these two models the latter has the lowest deviance (`r log_models[["Lost 5 percent overall"]]$interaction$deviance`), and the former has the lowest AIC (`r log_models[["Lost 5 percent overall"]]$diet$aic`). An analysis of deviance confirms that these models are essentially equivalent (deviance = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction$Deviance[2]` and *p* = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction[["Pr(>Chi)"]][2]`).
+
+#### Met fat goal
+
+None of the models were adequately associated with meeting fat goals.
+
+#### Met exercise goal at least 50 percent
+
+None of the models were adequately associated with meeting exercise goals.
+
+
 
 ```{r}
-# assemble dataframe with outcome variables and model results
-
-# performance <- data.frame(
-#   "Outcome" = character(),
-#   "Complexity" = character(),
-#   "AIC" = numeric(),
-#   "p-value" = numeric()
-# )
-# 
-# for (var in binary_vars){
-#   
-#   performance <- rbind(
-#     performance,
-#     data.frame(
-#       "Outcome" = var,
-#       "Complexity" = "Simple",
-#       "AIC" = log_simple[[var]]$model$aic,
-#       "p-value" = log_simple[[var]]$p
-#     )
-#   )
-#   
-#   aic <- log_complex[[var]]$model$aic
-#   
-#   performance <- rbind(
-#     performance,
-#     data.frame(
-#       "Outcome" = var,
-#       "Complexity" = "Complex",
-#       "AIC" = aic,
-#       "p-value" = log_complex[[var]]$p
-#     )
-#   )
-# }
-# 
-# knitr::kable(
-#   performance,
-#   caption = "Logistic model performance."
-# ) %>% 
-#   kableExtra::collapse_rows(
-#     columns = 1, valign = "top"
-#   ) %>% 
-#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 # # linear model performance summary
 # 
@@ -1044,6 +966,20 @@ Overall the models perform poorly, however some perform better than the null hyp
 
 ```
 
+
+
+### Continuous Outcomes
+
+#### Core attendance
+
+Core attendance can be predicted by readiness to change diet (*p* = `r linear_models[["Core attendance"]]$diet$p.value`) or exercise (*p* = `r linear_models[["Core attendance"]]$exercise$p.value`).
+
+#### Post-core attendance 
+#### Overall attendance
+#### Maximum weight lost                       
+#### Percent weight lost
+#### Met fat goal (percentage of sessions)
+#### Met exercise goal (percentage of sessions)
 
 # Core Completers
 
