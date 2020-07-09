@@ -1297,9 +1297,6 @@ None of the models met *a priori* significance thresholds.
 
 None of the models met *a priori* significance thresholds.
 
-### Considering the Models
-
-While the models proved to be statistically significant for many of the outcomes, none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R$^2$ near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were primarily in the preparation stage of both scales).
 
 # Core Completers
 
@@ -1327,8 +1324,6 @@ compareGroups::createTable(
     )
 
 ```
-
-## Categorical variables
 
 Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to whether they completed the 16 core sessions using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
@@ -1418,8 +1413,6 @@ df.processed %>%
 
 
 ```
-
-## Continuous variables
 
 The effect of completing the core sessions on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
@@ -1517,7 +1510,7 @@ df.processed %>%
 
 ## Summary
 
-Overall it appears that completing the core of the program is a good indicator of meeting other goals in the program. The question remains as to why. Do individuals complete the core because they are meeting their goals or do individuals meet their goals because they complete the core? The only way to answer this question is with extensive follow up and interviewing of participants to rule out the possibility of self-selection (i.e. individuals only complete the core if they see progress).
+Overall it appears that completing the core of the program is related to achieving other goals in the program. The question remains as to why. Do individuals complete the core because they are meeting their goals or do individuals meet their goals because they complete the core? The only way to answer this question is with extensive follow up and interviewing of participants to rule out the possibility of self-selection (i.e. individuals only complete the core if they see progress).
 
 # Post-hoc Analysis
 
@@ -1729,48 +1722,10 @@ Post-hoc models were then constructed. Performance of the post-hoc models was le
 
 # Discussion
 
-asdf
+Overall, the conclusions from this analysis reflect the nature of the data. The models proved to be statistically significant for many of the outcomes, but none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R$^2$ near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were primarily in the preparation stage of both scales).
 
+Of the 171 participants in this study, 75 (approximately `r round(100*75/141)`%) reported they were prepared to change both diet and exercise. restructuring the groups did not alleviate this large imbalance. Another approach would be to randomly select individuals who self-classified as "Preparation" on both questions and remove them from the dataset for model development. This would increase model fit (decrease the AIC for the logisitc models and increase the R$^2$ for linear models). However there is no guarantee this would produce statistically significant models. Such models would also require validation prior to a wider implementation.
 
-# random sample?
-
-```{r}
-
-df.pp <- df.processed %>% 
-  filter(
-    rtc_diet_groups == "Preparation" &
-      rtc_exercise_groups == "Preparation"
-  ) %>% 
-  sample_frac(
-    size = 0.2
-  )
-
-df.pp.joined <- df.processed %>% 
-  mutate(
-    filterCol = ifelse(
-      rtc_diet_groups == "Preparation" &
-        rtc_exercise_groups == "Preparation",
-      FALSE,
-      TRUE
-    )
-  ) %>% 
-  filter(
-    filterCol
-  ) %>% 
-  select(
-    -filterCol
-  ) %>% 
-  rbind(
-    df.pp
-  )
-
-mod_test <- glm(
-  df.pp.joined[["Lost 7 percent during core"]] ~ rtc_diet_groups,
-  data = df.pp.joined,
-  family = "binomial"
-)
-
-```
-
+A particularly bright spot in this analysis is the observation that individuals who complete all 16 core sessions have a high probability of achieving program goals. This is not surprising, but this study does little to explain why completing core sessions is associated with a higher rate of goal achievement. Does completing the core sessions enable achievement? Is it a product of participant diligence, which would also result in a high rate of achievement? Such questions could be answered via surveys prior to and following the course. This would also be an opportunity to gather more information about relevant participant behavior such as current dietary practice.
 
 
