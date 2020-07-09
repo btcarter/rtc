@@ -1299,7 +1299,7 @@ None of the models met *a priori* significance thresholds.
 
 ### Considering the Models
 
-While models proved to be statistically significant for many of the outcomes, none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R$^2$ near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were primarily in the preparation stage of both scales).
+While the models proved to be statistically significant for many of the outcomes, none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R$^2$ near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were primarily in the preparation stage of both scales).
 
 # Core Completers
 
@@ -1730,5 +1730,47 @@ Post-hoc models were then constructed. Performance of the post-hoc models was le
 # Discussion
 
 asdf
+
+
+# random sample?
+
+```{r}
+
+df.pp <- df.processed %>% 
+  filter(
+    rtc_diet_groups == "Preparation" &
+      rtc_exercise_groups == "Preparation"
+  ) %>% 
+  sample_frac(
+    size = 0.2
+  )
+
+df.pp.joined <- df.processed %>% 
+  mutate(
+    filterCol = ifelse(
+      rtc_diet_groups == "Preparation" &
+        rtc_exercise_groups == "Preparation",
+      FALSE,
+      TRUE
+    )
+  ) %>% 
+  filter(
+    filterCol
+  ) %>% 
+  select(
+    -filterCol
+  ) %>% 
+  rbind(
+    df.pp
+  )
+
+mod_test <- glm(
+  df.pp.joined[["Lost 7 percent during core"]] ~ rtc_diet_groups,
+  data = df.pp.joined,
+  family = "binomial"
+)
+
+```
+
 
 
