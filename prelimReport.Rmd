@@ -972,14 +972,60 @@ None of the models were adequately associated with meeting exercise goals.
 
 #### Core attendance
 
-Core attendance can be predicted by readiness to change diet (*p* = `r linear_models[["Core attendance"]]$diet$p.value`) or exercise (*p* = `r linear_models[["Core attendance"]]$exercise$p.value`).
+Core attendance can be predicted by readiness to change diet (*p* = `r linear_models[["Core attendance"]]$diet$p.value`) or exercise (*p* = `r linear_models[["Core attendance"]]$exercise$p.value`). Readiness to change exercise offers the highest adjusted R$^2$ (`r summary(linear_models[["Core attendance"]]$exercise)$adj.r.squared`).
 
-#### Post-core attendance 
+```{r}
+
+knitr::kable(summary(linear_models[["Core attendance"]]$exercise)$coefficients)
+
+```
+
+
+#### Post-core attendance
+
+None of the models meet *a priori* thresholds for significance.
+
 #### Overall attendance
-#### Maximum weight lost                       
+
+Overall attendance can be modelled using either readiness to change diet (*p* = `r linear_models[["Overall attendance"]]$diet$p.value`) or exercise (`r linear_models[["Overall attendance"]]$exercise$p.value`). Diet offers the highest adjusted R$^2$ (`r summary(linear_models[["Overall attendance"]]$diet)$adj.r.squared`).
+
+```{r}
+
+knitr::kable(summary(linear_models[["Overall attendance"]]$diet)$coefficients)
+
+```
+
+#### Maximum weight lost
+
+Of the three possible models, only diet passed the *a priori* thresholds of significance (`r linear_models[["Maximum weight lost"]]$diet$p.value`).
+
+```{r}
+
+knitr::kable(summary(linear_models[["Maximum weight lost"]]$diet)$coefficients)
+
+```
+
 #### Percent weight lost
+
+Of the three possible models, only diet passed the *a priori* thresholds of significance (`r linear_models[["Percent weight lost"]]$diet$p.value`).
+
+```{r}
+
+knitr::kable(summary(linear_models[["Percent weight lost"]]$diet)$coefficients)
+
+```
+
 #### Met fat goal (percentage of sessions)
+
+None of the models met *a priori* significance thresholds.
+
 #### Met exercise goal (percentage of sessions)
+
+None of the models met *a priori* significance thresholds.
+
+### Considering the Models
+
+While models proved to be statistically significant for many of the outcomes, none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R$^2$ near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were primarily in the preparation stage of both scales).
 
 # Core Completers
 
@@ -1207,27 +1253,28 @@ df.processed %>%
 Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups.
 
 ```{r}
-# df.processed <- df.processed %>% 
-#   mutate(
-#     rtc_diet_groups = ifelse(
-#       rtc_diet == "preparation" | rtc_diet == "contemplative",
-#       "preparation",
-#         ifelse(
-#           rtc_diet == "maintain" | rtc_diet == "action",
-#           "action",
-#           NA
-#         )
-#     ),
-#     rtc_exercise_groups = ifelse(
-#       rtc_exercise == "preparation" | rtc_exercise == "contemplative",
-#       "preparation",
-#         ifelse(
-#           rtc_exercise == "maintain" | rtc_exercise == "action",
-#           "action",
-#           NA
-#         )
-#     ),
-#   )
+
+df.processed <- df.processed %>%
+  mutate(
+    rtc_diet_groups = ifelse(
+      rtc_diet == "preparation" | rtc_diet == "contemplative",
+      "preparation",
+        ifelse(
+          rtc_diet == "maintain" | rtc_diet == "action",
+          "action",
+          NA
+        )
+    ),
+    rtc_exercise_groups = ifelse(
+      rtc_exercise == "preparation" | rtc_exercise == "contemplative",
+      "preparation",
+        ifelse(
+          rtc_exercise == "maintain" | rtc_exercise == "action",
+          "action",
+          NA
+        )
+    ),
+  )
 
 ```
 

@@ -3141,6 +3141,405 @@ linear_models &lt;- lapply(cont_vars, model_all)</code></pre>
 #     bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 </div>
 </div>
+<div id="continuous-outcomes" class="section level3">
+<h3>Continuous Outcomes</h3>
+<div id="core-attendance" class="section level4">
+<h4>Core attendance</h4>
+<p>Core attendance can be predicted by readiness to change diet (<em>p</em> = 0.0370821) or exercise (<em>p</em> = 0.0260284). Readiness to change exercise offers the highest adjusted R<span class="math inline">\(^2\)</span> (0.0367855).</p>
+<pre class="r"><code>knitr::kable(summary(linear_models[[&quot;Core attendance&quot;]]$exercise)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+6.625000
+</td>
+<td style="text-align:right;">
+1.580937
+</td>
+<td style="text-align:right;">
+4.190552
+</td>
+<td style="text-align:right;">
+0.0000450
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsPreparation
+</td>
+<td style="text-align:right;">
+4.960106
+</td>
+<td style="text-align:right;">
+1.646838
+</td>
+<td style="text-align:right;">
+3.011897
+</td>
+<td style="text-align:right;">
+0.0030001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsAction
+</td>
+<td style="text-align:right;">
+4.072674
+</td>
+<td style="text-align:right;">
+1.721732
+</td>
+<td style="text-align:right;">
+2.365452
+</td>
+<td style="text-align:right;">
+0.0191555
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_exercise_groupsMaintain
+</td>
+<td style="text-align:right;">
+4.221154
+</td>
+<td style="text-align:right;">
+1.807871
+</td>
+<td style="text-align:right;">
+2.334876
+</td>
+<td style="text-align:right;">
+0.0207394
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="post-core-attendance" class="section level4">
+<h4>Post-core attendance</h4>
+<p>None of the models meet <em>a priori</em> thresholds for significance.</p>
+</div>
+<div id="overall-attendance" class="section level4">
+<h4>Overall attendance</h4>
+<p>Overall attendance can be modelled using either readiness to change diet (<em>p</em> = 0.0210478) or exercise (0.0440444). Diet offers the highest adjusted R<span class="math inline">\(^2\)</span> (0.0394607).</p>
+<pre class="r"><code>knitr::kable(summary(linear_models[[&quot;Overall attendance&quot;]]$diet)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+8.142857
+</td>
+<td style="text-align:right;">
+1.527956
+</td>
+<td style="text-align:right;">
+5.329248
+</td>
+<td style="text-align:right;">
+0.0000003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+4.981037
+</td>
+<td style="text-align:right;">
+1.619845
+</td>
+<td style="text-align:right;">
+3.075008
+</td>
+<td style="text-align:right;">
+0.0024597
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+4.470046
+</td>
+<td style="text-align:right;">
+1.840926
+</td>
+<td style="text-align:right;">
+2.428151
+</td>
+<td style="text-align:right;">
+0.0162376
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+3.241758
+</td>
+<td style="text-align:right;">
+2.202019
+</td>
+<td style="text-align:right;">
+1.472175
+</td>
+<td style="text-align:right;">
+0.1428556
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="maximum-weight-lost" class="section level4">
+<h4>Maximum weight lost</h4>
+<p>Of the three possible models, only diet passed the <em>a priori</em> thresholds of significance (0.0430835).</p>
+<pre class="r"><code>knitr::kable(summary(linear_models[[&quot;Maximum weight lost&quot;]]$diet)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+7.4714286
+</td>
+<td style="text-align:right;">
+3.277712
+</td>
+<td style="text-align:right;">
+2.2794646
+</td>
+<td style="text-align:right;">
+0.0239051
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+7.6356511
+</td>
+<td style="text-align:right;">
+3.474829
+</td>
+<td style="text-align:right;">
+2.1974178
+</td>
+<td style="text-align:right;">
+0.0293672
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+7.3479263
+</td>
+<td style="text-align:right;">
+3.949082
+</td>
+<td style="text-align:right;">
+1.8606667
+</td>
+<td style="text-align:right;">
+0.0645494
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.3362637
+</td>
+<td style="text-align:right;">
+4.723686
+</td>
+<td style="text-align:right;">
+0.0711867
+</td>
+<td style="text-align:right;">
+0.9433343
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="percent-weight-lost" class="section level4">
+<h4>Percent weight lost</h4>
+<p>Of the three possible models, only diet passed the <em>a priori</em> thresholds of significance (0.0353454).</p>
+<pre class="r"><code>knitr::kable(summary(linear_models[[&quot;Percent weight lost&quot;]]$diet)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.0317706
+</td>
+<td style="text-align:right;">
+0.0131174
+</td>
+<td style="text-align:right;">
+2.4220208
+</td>
+<td style="text-align:right;">
+0.0165044
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsPreparation
+</td>
+<td style="text-align:right;">
+0.0344068
+</td>
+<td style="text-align:right;">
+0.0139062
+</td>
+<td style="text-align:right;">
+2.4741968
+</td>
+<td style="text-align:right;">
+0.0143530
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsAction
+</td>
+<td style="text-align:right;">
+0.0298675
+</td>
+<td style="text-align:right;">
+0.0158042
+</td>
+<td style="text-align:right;">
+1.8898468
+</td>
+<td style="text-align:right;">
+0.0605111
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rtc_diet_groupsMaintain
+</td>
+<td style="text-align:right;">
+0.0073902
+</td>
+<td style="text-align:right;">
+0.0189042
+</td>
+<td style="text-align:right;">
+0.3909292
+</td>
+<td style="text-align:right;">
+0.6963479
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="met-fat-goal-percentage-of-sessions" class="section level4">
+<h4>Met fat goal (percentage of sessions)</h4>
+<p>None of the models met <em>a priori</em> significance thresholds.</p>
+</div>
+<div id="met-exercise-goal-percentage-of-sessions" class="section level4">
+<h4>Met exercise goal (percentage of sessions)</h4>
+<p>None of the models met <em>a priori</em> significance thresholds.</p>
+</div>
+</div>
+<div id="considering-the-models" class="section level3">
+<h3>Considering the Models</h3>
+<p>While models proved to be statistically significant for many of the outcomes, none performed well. The best logistic models achieved an AIC above 200 (smaller is better) and the best linear models achieved an adjusted R<span class="math inline">\(^2\)</span> near 0.03. At best, these models are only useful for describing theoretical relationships, but are not useful in any practical application. This is probably due to the unbalanced nature of the data (i.e. participants were fell primarily )</p>
+</div>
 </div>
 </div>
 <div id="core-completers" class="section level1">
