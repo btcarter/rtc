@@ -218,7 +218,7 @@ df.processed$rtc_exercise_groups <- factor(
 # Primary Analysis
 ## Descriptives
 
-### Included vs Excluded individuals
+### Included vs Excluded 
 
 ```{r message=FALSE, warning=FALSE}
 tab1 <- compareGroups::compareGroups(
@@ -255,7 +255,7 @@ compareGroups::createTable(
 ```
 
 
-## RTC Categorical Variables
+## Categorical Variables
 
 Categorical variables (i.e. variables that were nominal rather than quantitative in nature) were examined in relation to readiness to change diet or exercise using a Pearson's chi-square analysis. What follows are the reported $\chi^2$ statistics, degrees of freedom, and p-values from each test.
 
@@ -376,6 +376,92 @@ df.processed %>%
 
 ```
 
+#### Distribution Tables
+
+```{r}
+knitr::kable(
+  chis.diet$`Lost 7 percent during core`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 7 percent during core" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.diet$`Lost 7 percent overall`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 7 percent overall" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.diet$`Lost 5 percent during core`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 5 percent during core" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.diet$`Lost 5 percent overall`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 5 percent overall" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.diet$`Met fat goal`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Met fat goal" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.diet$`Met exercise goal at least 50 percent`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Met exercise goal at least 50 percent" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+
+
+```
+
+
 ### Exercise
 
 ```{r}
@@ -484,7 +570,93 @@ df.processed %>%
 
 ```
 
-## RTC Continuous Variables
+#### Distribution Tables
+
+```{r}
+
+knitr::kable(
+  chis.exercise$`Lost 7 percent during core`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 7 percent during core" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.exercise$`Lost 7 percent overall`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 7 percent overall" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.exercise$`Lost 5 percent during core`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 5 percent during core" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.exercise$`Lost 5 percent overall`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Lost 5 percent overall" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.exercise$`Met fat goal`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Met fat goal" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+knitr::kable(
+  chis.exercise$`Met exercise goal at least 50 percent`$observed
+) %>% 
+  kableExtra::add_header_above(c(" " = 1,"Met exercise goal at least 50 percent" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 4) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
+
+
+```
+
+
+## Continuous Variables
 
 The effect of readiness to change on quantitative measures were examined using via an analysis of variance. The appropriate statistics from each test are found below.
 
@@ -881,18 +1053,159 @@ Whether or not a participant was going to lose 7 percent of their body weight du
 
 When comparing the AIC for both models, readiness to change diet (deviance = `r log_models[["Lost 7 percent during core"]]$diet$deviance`; AIC = `r log_models[["Lost 7 percent during core"]]$diet$aic`) is a better predictor of the outcome than readiness to change exercise (deviance = `r log_models[["Lost 7 percent during core"]]$exercise$deviance;` AIC = `r log_models[["Lost 7 percent during core"]]$exercise$aic`).
 
+##### Full Model Estimates
+
+```{r}
+
+a <- "Lost 7 percent during core"
+
+knitr::kable(log_models[[a]]$ANOD$diet) %>% 
+   kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 5))
+
+```
+
+
+##### Individual Beta's
+
+```{r}
+
+knitr::kable(summary(log_models[[a]]$diet)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 4))
+
+```
+
+
 #### Lost 7 percent overall   
 
 Diet or exercise can be used to predict success either singly (Diet: *p* = `r log_models[["Lost 7 percent overall"]]$diet$p.value`; Exercise: *p* = `r log_models[["Lost 7 percent overall"]]$exercise$p.value`) or as an interaction (`r log_models[["Lost 7 percent overall"]]$interaction$p.value`). Of the three, the interactive model has the smallest deviance (`r log_models[[
 "Lost 7 percent overall"]]$interaction$deviance`).
 
+##### Full Model Estimates
+
+```{r}
+
+a <- "Lost 7 percent overall"
+
+knitr::kable(log_models[[a]]$ANOD$interaction) %>% 
+   kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 5))
+
+```
+
+
+##### Individual Beta's
+
+```{r}
+
+knitr::kable(summary(log_models[[a]]$interaction)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 4))
+
+```
+
 #### Lost 5 percent during core
 
 Only readiness to change diet is able to predict a loss of 5% of body weight (*p* = `r log_models[["Lost 5 percent during core"]]$diet$p.value`). Readiness to change exercise or an interaction between teh two do not meet *a priori* threshold for significance.
 
+##### Full Model Estimates
+
+```{r}
+
+a <- "Lost 5 percent during core"
+
+knitr::kable(log_models[[a]]$ANOD$diet) %>% 
+   kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 5))
+
+```
+
+
+##### Individual Beta's
+
+```{r}
+
+knitr::kable(summary(log_models[[a]]$diet)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 4))
+
+```
+
 #### Lost 5 percent overall  
 
-The readiness to change diet overall is also associated with a loss of 5% of body mass (*p* = `r log_models[["Lost 5 percent overall"]]$diet$p.value`), as is the model including an interaction with readiness to change exercise (*p* = `r log_models[["Lost 5 percent overall"]]$interaction$p.value`). Of these two models the latter has the lowest deviance (`r log_models[["Lost 5 percent overall"]]$interaction$deviance`), and the former has the lowest AIC (`r log_models[["Lost 5 percent overall"]]$diet$aic`). An analysis of deviance confirms that these models are essentially equivalent (deviance = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction$Deviance[2]` and *p* = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction[["Pr(>Chi)"]][2]`).
+The readiness to change diet overall is also associated with a loss of 5% of body mass (*p* = `r log_models[["Lost 5 percent overall"]]$diet$p.value`), as is the model including an interaction with readiness to change exercise (*p* = `r log_models[["Lost 5 percent overall"]]$interaction$p.value`). Of these two models the latter has the lowest deviance (`r log_models[["Lost 5 percent overall"]]$interaction$deviance`), and the former has the lowest AIC (`r log_models[["Lost 5 percent overall"]]$diet$aic`). An analysis of deviance confirms that these models are essentially equivalent (deviance = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction$Deviance[2]` and *p* = `r log_models[["Lost 5 percent overall"]]$ANOD$dietVinteraction[["Pr(>Chi)"]][2]`). In such a case, the simpler model is the best choice.
+
+##### Full Model Estimates
+
+```{r}
+
+a <- "Lost 5 percent overall"
+
+knitr::kable(log_models[[a]]$ANOD$diet) %>% 
+   kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 5))
+
+```
+
+
+##### Individual Beta's
+
+```{r}
+
+knitr::kable(summary(log_models[[a]]$diet)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c("Readiness to Change Diet" = 1, " " = 4))
+
+```
 
 #### Met fat goal
 
@@ -903,71 +1216,6 @@ None of the models were adequately associated with meeting fat goals.
 None of the models were adequately associated with meeting exercise goals.
 
 
-
-```{r}
-
-# # linear model performance summary
-# 
-# performance <- data.frame(
-#   "Outcome" = character(),
-#   "Complexity" = character(),
-#   "R-squared" = numeric(),
-#   "p-value" = numeric()
-# )
-# 
-# for (var in cont_vars){
-#   
-#   aic <- summary(linear_simple[[var]])$adj.r.squared
-#   
-#   performance <- rbind(
-#     performance,
-#     data.frame(
-#       "Outcome" = var,
-#       "Complexity" = "Simple",
-#       "R-squared" = aic,
-#       "p-value" = pf(
-#          summary(linear_simple[[var]])$fstatistic[1],
-#          summary(linear_simple[[var]])$fstatistic[2],
-#          summary(linear_simple[[var]])$fstatistic[3],
-#          lower = FALSE
-#       ),
-#       row.names = NULL
-#     )
-#   )
-#   
-#   aic <- summary(linear_complex[[var]])$adj.r.squared
-#   
-#   performance <- rbind(
-#     performance,
-#     data.frame(
-#       "Outcome" = var,
-#       "Complexity" = "Complex",
-#       "R-squared" = aic,
-#       "p-value" = pf(
-#          summary(linear_complex[[var]])$fstatistic[1],
-#          summary(linear_complex[[var]])$fstatistic[2],
-#          summary(linear_complex[[var]])$fstatistic[3],
-#          lower = FALSE
-#       ),
-#       row.names = NULL
-#     )
-#   )
-# }
-# 
-# knitr::kable(
-#   performance,
-#   caption = "Linear model performance when predicting outcome variables."
-# ) %>% 
-#   kableExtra::collapse_rows(
-#     columns = 1, valign = "top"
-#   ) %>% 
-#   kableExtra::kable_styling(
-#     bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
-```
-
-
-
 ### Continuous Outcomes
 
 #### Core attendance
@@ -976,7 +1224,13 @@ Core attendance can be predicted by readiness to change diet (*p* = `r linear_mo
 
 ```{r}
 
-knitr::kable(summary(linear_models[["Core attendance"]]$exercise)$coefficients)
+knitr::kable(summary(linear_models[["Core attendance"]]$exercise)$coefficients) %>%  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
@@ -991,7 +1245,13 @@ Overall attendance can be modelled using either readiness to change diet (*p* = 
 
 ```{r}
 
-knitr::kable(summary(linear_models[["Overall attendance"]]$diet)$coefficients)
+knitr::kable(summary(linear_models[["Overall attendance"]]$diet)$coefficients) %>%  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
@@ -1001,7 +1261,14 @@ Of the three possible models, only diet passed the *a priori* thresholds of sign
 
 ```{r}
 
-knitr::kable(summary(linear_models[["Maximum weight lost"]]$diet)$coefficients)
+knitr::kable(summary(linear_models[["Maximum weight lost"]]$diet)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
@@ -1011,7 +1278,14 @@ Of the three possible models, only diet passed the *a priori* thresholds of sign
 
 ```{r}
 
-knitr::kable(summary(linear_models[["Percent weight lost"]]$diet)$coefficients)
+knitr::kable(summary(linear_models[["Percent weight lost"]]$diet)$coefficients) %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    )
 
 ```
 
@@ -1241,40 +1515,220 @@ df.processed %>%
 
 ```
 
+## Summary
 
-
-
-
-
-
+Overall it appears that completing the core of the program is a good indicator of meeting other goals in the program. The question remains as to why. Do individuals complete the core because they are meeting their goals or do individuals meet their goals because they complete the core? The only way to answer this question is with extensive follow up and interviewing of participants to rule out the possibility of self-selection (i.e. individuals only complete the core if they see progress).
 
 # Post-hoc Analysis
 
-Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups.
-
 ```{r}
 
-df.processed <- df.processed %>%
+df.post <- df.processed %>%
   mutate(
     rtc_diet_groups = ifelse(
-      rtc_diet == "preparation" | rtc_diet == "contemplative",
+      rtc_diet == "preparation" | 
+        rtc_diet == "contemplative" |
+        rtc_diet == "precontemplative",
       "preparation",
         ifelse(
-          rtc_diet == "maintain" | rtc_diet == "action",
+          rtc_diet == "maintain" | 
+            rtc_diet == "action",
           "action",
           NA
         )
     ),
     rtc_exercise_groups = ifelse(
-      rtc_exercise == "preparation" | rtc_exercise == "contemplative",
+      rtc_exercise == "preparation" | 
+        rtc_exercise == "contemplative" |
+        rtc_diet == "precontemplative",
       "preparation",
         ifelse(
-          rtc_exercise == "maintain" | rtc_exercise == "action",
+          rtc_exercise == "maintain" | 
+            rtc_exercise == "action",
           "action",
           NA
         )
-    ),
+    )
+  )
+
+cross.both <- chisq.test(
+  df.post$rtc_diet_groups,
+  df.post$rtc_exercise_groups,
+  correct = TRUE
+  )
+
+cv.test = function(x,y) {
+  CV = sqrt(chisq.test(x, y, correct=FALSE)$statistic /
+    (length(x) * (min(length(unique(x)),length(unique(y))) - 1)))
+  return(as.numeric(CV))
+}
+
+CV <- cv.test(
+  df.post$rtc_diet_groups,
+  df.post$rtc_exercise_groups
   )
 
 ```
+
+Readiness to change responses were used to create aggregate groups. Individuals self-classifying as 'Precontemplative', 'Contemplative' or 'Preparation' were grouped together and individuals self-classifying as 'Action' or 'Maintain' were grouped together. The models were then recreated with the new groups. Doing so reduced Cramer's V to `r CV`, resulting in a moderate association between the two readiness to change questions ($\chi^2$ = `r cross.both$statistic`, *p* = `r cross.both$p.value`).
+
+```{r}
+knitr::kable(cross.both$observed, caption = "New Group Tallies") %>% 
+  kableExtra::kable_styling(
+    bootstrap_options = c(
+      "striped", 
+      "hover", 
+      "responsive"
+      )
+    ) %>% 
+  kableExtra::add_header_above(c(" " = 1, "Readiness to Change Exercise" = 2)) %>% 
+  kableExtra::pack_rows("Readiness to Change Diet", 1, 2)
+```
+
+```{r newMods}
+
+logit_p <- function(model){
+  p.value <- 1 - pchisq(
+  model$null.deviance - model$deviance, 
+  model$df.null - model$df.residual
+  )
+  
+  return(p.value)
+  
+}
+
+model_log <- function(fmla){
+  model <- glm(
+    formula = fmla,
+    data = df.post,
+    family = binomial
+  )
+  
+  return(model)
+}
+
+model_all <- function(x){
+
+
+  model.diet <- model_log(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", sep = "")
+  )
+  model.diet$p.value <- logit_p(model.diet)
+  
+  model.exercise <- model_log(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_exercise_groups", sep = "")
+  )
+  model.exercise$p.value <- logit_p(model.exercise)
+  
+  
+  model.interaction <- model_log(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", " * ", "rtc_exercise_groups", sep = "")
+  )
+  
+  model.interaction$p.value <- logit_p(model.interaction)
+  
+  b <- list(
+    "diet" = model.diet,
+    "exercise" = model.exercise,
+    "interaction" = model.interaction
+  )
+    
+  return(b)
+}
+
+log_post <- lapply(binary_vars, model_all)
+
+
+
+model_lm <- function(fmla){
+  model <- lm(
+    formula = fmla,
+    data = df.post
+  )
+  
+  return(model)
+}
+
+model_all <- function(x){
+
+
+  model.diet <- model_lm(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", sep = "")
+  )
+  model.diet$p.value <- pf(
+          summary(model.diet)$fstatistic[1],
+          summary(model.diet)$fstatistic[2],
+          summary(model.diet)$fstatistic[3],
+          lower = FALSE
+       )
+  
+  model.exercise <- model_lm(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_exercise_groups", sep = "")
+  )
+  model.exercise$p.value <- pf(
+          summary(model.exercise)$fstatistic[1],
+          summary(model.exercise)$fstatistic[2],
+          summary(model.exercise)$fstatistic[3],
+          lower = FALSE
+       )
+  
+  
+  model.interaction <- model_lm(
+    paste("df.post[['", x, "']]", 
+          " ~ ", "rtc_diet_groups", " * ", "rtc_exercise_groups", sep = "")
+  )
+  model.interaction$p.value <- pf(
+          summary(model.interaction)$fstatistic[1],
+          summary(model.interaction)$fstatistic[2],
+          summary(model.interaction)$fstatistic[3],
+          lower = FALSE
+       )
+  
+  b <- list(
+    "diet" = model.diet,
+    "exercise" = model.exercise,
+    "interaction" = model.interaction
+  )
+    
+  return(b)
+}
+
+linear_post <- lapply(cont_vars, model_all)
+
+for(nom in names(log_post)){
+  for(nomy in names(log_post[[nom]])){
+    
+    if(log_post[[nom]][[nomy]]$p.value <= 0.05){
+      print(
+        paste(nom, nomy, sep = ": ")
+      )
+      print(log_post[[nom]][[nomy]]$p.value)
+    }
+  }
+}
+
+for(nom in names(linear_post)){
+  for(nomy in names(linear_post[[nom]])){
+    if(linear_post[[nom]][[nomy]]$p.value <= 0.05){
+      print(
+        paste(nom, nomy, sep = ": ")
+      )
+      print(linear_post[[nom]][[nomy]]$p.value)
+    }
+  }
+}
+
+```
+
+Post-hoc models were then constructed. Performance of the post-hoc models was less than the preliminary analysis. Of all the models tested, only three were statistically significant. Logistic models using only readiness to change exercise were associated with whether an individual lost seven percent of body mass during core (AIC = `r log_post[["Lost 7 percent during core"]]$exercise$aic`, *p* = `r log_post[["Lost 7 percent during core"]]$exercise$p.value`) and losing seven percent overall (AIC = `r log_post[["Lost 7 percent overall"]]$exercise$aic`,*p* = `r log_post[["Lost 7 percent overall"]]$exercise$p.value`). A linear model using exercise was significant for percent weight lost (R$^2$ = `r summary(linear_post[["Percent weight lost"]]$exercise)$adj.r.squared`, *p* = `r linear_post[["Percent weight lost"]]$exercise$p.value`). This is a marked reduction in the number of models meeting *a priori* significance and without improved model fit (the AIC and R$^2$ values are essentially the same as before).
+
+# Discussion
+
+asdf
+
 
